@@ -1,0 +1,37 @@
+<html>
+
+<head>
+    <title>AnimPicMaker</title>
+    <link rel="stylesheet" href="https://vjs.zencdn.net/7.17.0/video-js.css" />
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="css/crop-selector.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="css/index.css">
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
+
+<body>
+    <div id="container">
+        <h1 align="center" class="main-title">AnimPicMaker - the tool for making animated pictures (WEBP, GIF) from video</h1>
+
+        <div id="video-container">
+            <div id="video-holder">
+                <video id="my-video" class="video-js" controls preload="auto" data-setup="{}">
+                    <!-- <source src="C:\Users\johnbor\Downloads\1.mp4" type="video/mp4" />
+                    <source src="MY_VIDEO.webm" type="video/webm" /> -->
+                </video>
+            </div>
+            <div id="crop-selector-container">
+                <div id="resizable"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://vjs.zencdn.net/7.17.0/video.min.js"></script>
+    <script src="js/crop-selector.js"></script>
+</body>
+
+</html>

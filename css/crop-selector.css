@@ -1,0 +1,31 @@
+.ui-resizable-ne,
+.ui-resizable-se,
+.ui-resizable-sw,
+.ui-resizable-nw,
+.ui-resizable-w,
+.ui-resizable-s,
+.ui-resizable-e,
+.ui-resizable-n {
+    width: 8px;
+    height: 8px;
+    background-color: blue;
+}
+
+.ui-resizable-se.ui-icon {
+    background-image: none;
+}
+
+.ui-resizable-se {
+    right: -5px;
+    bottom: -5px;
+}
+
+.ui-resizable-w,
+.ui-resizable-e {
+    top: calc(50% - 4px);
+}
+
+.ui-resizable-s,
+.ui-resizable-n {
+    left: calc(50% - 4px);
+}
