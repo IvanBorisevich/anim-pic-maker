@@ -2,9 +2,10 @@ const dropArea = document.querySelector(".drag-area"),
     dragText = dropArea.querySelector("header"),
     button = dropArea.querySelector("button"),
     input = dropArea.querySelector("input"),
-    videoContainer = document.querySelector("#video-container");
+    videoProcessingTool = document.querySelector("#video-processing-tool");
 
-videoContainer.hidden = true;
+// videoProcessingTool.hidden = true;
+dropArea.style.display = "none";
 
 let file; //this is a global variable and we'll use it inside multiple functions
 button.onclick = () => {
@@ -43,7 +44,7 @@ function showFile() {
         fileReader.onload = () => {
             let fileURL = fileReader.result;
             dropArea.style.display = "none";
-            videoContainer.hidden = false;
+            videoProcessingTool.hidden = false;
         }
         fileReader.readAsDataURL(file);
     } else {

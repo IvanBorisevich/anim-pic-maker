@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="https://vjs.zencdn.net/7.17.0/video-js.css" />
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="lib/jquery-asRange/dist/css/asRange.min.css">
 
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/crop-selector.css">
@@ -12,6 +13,7 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="lib/jquery-asRange/dist/jquery-asRange.min.js"></script>
 </head>
 
 <body>
@@ -25,21 +27,30 @@
             <button>Browse File</button>
             <input type="file" hidden>
         </div>
-        <div id="video-container">
-            <div id="video-holder">
-                <video id="my-video" class="video-js" controls preload="auto" data-setup="{}">
-                    <!-- <source src="C:\Users\johnbor\Downloads\1.mp4" type="video/mp4" />
-                    <source src="MY_VIDEO.webm" type="video/webm" /> -->
-                </video>
+        <div id="video-processing-tool">
+            <div id="video-container">
+                <div id="video-holder">
+                    <video id="my-video" class="video-js" controls preload="auto" data-setup="{}">
+                        <!-- <source src="C:\Users\johnbor\Downloads\1.mp4" type="video/mp4" />
+                        <source src="MY_VIDEO.webm" type="video/webm" /> -->
+                    </video>
+                </div>
+                <div id="crop-selector-container">
+                    <div id="resizable"></div>
+                </div>
             </div>
-            <div id="crop-selector-container">
-                <div id="resizable"></div>
+            <div id="tool-panel">
+                <div id="player-slider-container">
+                    <input id="player-slider" type="text" min="0" max="10" value="0" name="points" step="0.01" />
+                </div>
+                <div id="trimmer-slider-container">
+                    <input id="trimmer-slider" type="text" min="0" max="10" value="0,10" name="points" step="0.01" />
+                </div>
             </div>
         </div>
 
         <footer>
             <br>
-            <h4 align="center" class="footer-text">Author: Ivan Barysevich</h4>
             <br>
         </footer>
     </div>
@@ -49,6 +60,21 @@
 
     <script src="js/crop-selector.js"></script>
     <script src="js/upload-file-area.js"></script>
+
+    <script>
+        $(function($) {
+            $('#player-slider').asRange({
+                tip: false
+            });
+            $('#trimmer-slider').asRange({
+                range: true,
+                limit: true,
+                keyboard: true,
+                tip: false
+            });
+        });
+    </script>
+
 </body>
 
 </html>
