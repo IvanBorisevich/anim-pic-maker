@@ -1,3 +1,7 @@
+* {
+    box-sizing: unset !important;
+}
+
 body {
     background-color: #5256ad;
 }
@@ -26,6 +30,8 @@ body {
     height: 340px;
     margin: auto;
     position: relative;
+    border: 1px dashed #97C5DC;
+    border-radius: 4px;
 }
 
 #video-holder,
@@ -54,12 +60,18 @@ body {
     padding: 15px;
 }
 
-#buttons-container {
-    margin-top: 20px;
+#operation-buttons-container,
+#player-buttons-container {
     padding-left: 130px;
     padding-right: 130px;
+    display: flex;
+    justify-content: center;
+}
+
+#player-buttons-container {
+    margin-top: 10px;
 }
 
 button {
-    margin-top: 4px
+    margin: 3px;
 }

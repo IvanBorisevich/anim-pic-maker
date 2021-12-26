@@ -5,11 +5,12 @@
     <link rel="stylesheet" href="https://vjs.zencdn.net/7.17.0/video-js.css" />
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="lib/jquery-asRange/dist/css/asRange.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+
+    <link rel="stylesheet" href="lib/jquery-asRange/dist/css/asRange.min.css">
     <link rel="stylesheet" href="lib/pheasant-buttons-main/dist/css/pheasant-demure-buttons-reset.css" type="text/css" media="all" />
     <link rel="stylesheet" href="lib/pheasant-buttons-main/dist/css/pheasant-demure-buttons-layout.css" type="text/css" media="all" />
     <link rel="stylesheet" href="lib/pheasant-buttons-main/dist/css/pheasant-demure-buttons.css" type="text/css" media="all" />
@@ -17,6 +18,7 @@
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/crop-selector.css">
     <link rel="stylesheet" href="css/upload-file-area.css">
+    <link rel="stylesheet" href="css/sliders.css">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -37,10 +39,7 @@
         <div id="video-processing-tool">
             <div id="video-container">
                 <div id="video-holder">
-                    <video id="my-video" class="video-js" controls preload="auto" data-setup="{}">
-                        <!-- <source src="C:\Users\johnbor\Downloads\1.mp4" type="video/mp4" />
-                        <source src="MY_VIDEO.webm" type="video/webm" /> -->
-                    </video>
+                    <video id="my-video" autoplay></video>
                 </div>
                 <div id="crop-selector-container">
                     <div id="resizable"></div>
@@ -53,16 +52,19 @@
                 <div id="trimmer-slider-container">
                     <input id="trimmer-slider" type="text" min="0" max="10" value="0,10" name="points" step="0.01" />
                 </div>
-
-
             </div>
-            <div id="buttons-container">
+            <div id="player-buttons-container">
+                <button id="play-pause-button" type="button" class="pheasant-demure-button outline light hover blink">
+                    <span class="label">Play</span>
+                </button>
                 <button id="trim-left-button" type="button" class="pheasant-demure-button outline light hover blink">
-                    <span class="label">{</span>
+                    <span class="label">[</span>
                 </button>
                 <button id="trim-right-button" type="button" class="pheasant-demure-button outline light hover blink">
-                    <span class="label">}</span>
+                    <span class="label">]</span>
                 </button>
+            </div>
+            <div id="operation-buttons-container">
                 <button id="save-cropped-button" type="button" class="pheasant-demure-button outline light hover blink">
                     <p>Save Cropped Fragment</p>
                 </button>

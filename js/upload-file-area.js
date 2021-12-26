@@ -4,18 +4,16 @@ const dropArea = document.querySelector(".drag-area"),
     input = dropArea.querySelector("input"),
     videoProcessingTool = document.querySelector("#video-processing-tool");
 
-// videoProcessingTool.hidden = true;
-dropArea.style.display = "none";
+videoProcessingTool.hidden = true;
 
-let file; //this is a global variable and we'll use it inside multiple functions
+let file;
 button.onclick = () => {
-    input.click(); //if user click on the button then the input also clicked
+    input.click();
 }
 input.addEventListener("change", function() {
-    //getting user select file and [0] this means if user select multiple files then we'll select only the first one
     file = this.files[0];
     dropArea.classList.add("active");
-    showFile(); //calling function
+    showFile();
 });
 //If user Drag File Over DropArea
 dropArea.addEventListener("dragover", (event) => {
@@ -45,6 +43,7 @@ function showFile() {
             let fileURL = fileReader.result;
             dropArea.style.display = "none";
             videoProcessingTool.hidden = false;
+            playUploadedFile(file)
         }
         fileReader.readAsDataURL(file);
     } else {
@@ -52,4 +51,22 @@ function showFile() {
         dropArea.classList.remove("active");
         dragText.textContent = "Drag & Drop to Upload File";
     }
+}
+
+function playUploadedFile(file) {
+    'use strict'
+    var URL = window.URL || window.webkitURL
+    var type = file.type
+    var videoNode = document.querySelector('#my-video')
+    var canPlay = videoNode.canPlayType(type)
+    if (canPlay === '') canPlay = 'no'
+    var isError = canPlay === 'no'
+
+    if (isError) {
+        console.log("Error during video play");
+        return
+    }
+
+    var fileURL = URL.createObjectURL(file)
+    videoNode.src = fileURL
 }
