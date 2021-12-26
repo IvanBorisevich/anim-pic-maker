@@ -1,8 +1,9 @@
-html {
-    background-color: #5aa2c4;
+body {
+    background-color: #5256ad;
 }
 
-.main-title {
+.main-title,
+.footer-text {
     color: #ecf4f8;
 }
 
@@ -12,10 +13,14 @@ html {
     position: relative;
 }
 
+.drag-area {
+    margin: auto;
+}
+
 #video-container {
     margin: auto;
-    width: 500px;
-    height: 300px;
+    width: 700px;
+    height: 500px;
     position: relative;
 }
 
@@ -32,13 +37,6 @@ html {
 
 #crop-selector-container {
     position: absolute;
-    width: 100%;
-    height: 100%;
-}
-
-#resizable {
-    border: 1px dotted blue;
-    background: transparent;
     width: 100%;
     height: 100%;
 }

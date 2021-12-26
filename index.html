@@ -4,10 +4,11 @@
     <title>AnimPicMaker</title>
     <link rel="stylesheet" href="https://vjs.zencdn.net/7.17.0/video-js.css" />
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
-    <link rel="stylesheet" href="css/crop-selector.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="css/index.css">
 
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/crop-selector.css">
+    <link rel="stylesheet" href="css/upload-file-area.css">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -16,7 +17,14 @@
 <body>
     <div id="container">
         <h1 align="center" class="main-title">AnimPicMaker - the tool for making animated pictures (WEBP, GIF) from video</h1>
-
+        <br>
+        <div class="drag-area">
+            <div class="icon"><i class="fas fa-cloud-upload-alt"></i></div>
+            <header>Drag & Drop to Upload File</header>
+            <span>OR</span>
+            <button>Browse File</button>
+            <input type="file" hidden>
+        </div>
         <div id="video-container">
             <div id="video-holder">
                 <video id="my-video" class="video-js" controls preload="auto" data-setup="{}">
@@ -28,10 +36,19 @@
                 <div id="resizable"></div>
             </div>
         </div>
+
+        <footer>
+            <br>
+            <h4 align="center" class="footer-text">Author: Ivan Barysevich</h4>
+            <br>
+        </footer>
     </div>
 
+
     <script src="https://vjs.zencdn.net/7.17.0/video.min.js"></script>
+
     <script src="js/crop-selector.js"></script>
+    <script src="js/upload-file-area.js"></script>
 </body>
 
 </html>
