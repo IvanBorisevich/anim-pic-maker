@@ -4,6 +4,7 @@ body {
 
 .main-title {
     color: #ecf4f8;
+    margin-top: 20px;
 }
 
 #container {
@@ -18,11 +19,11 @@ body {
 
 #video-container,
 #tool-panel {
-    width: 600px;
+    width: 590px;
 }
 
 #video-container {
-    height: 370px;
+    height: 340px;
     margin: auto;
     position: relative;
 }
@@ -50,5 +51,15 @@ body {
 
 #player-slider-container,
 #trimmer-slider-container {
-    padding: 20px;
+    padding: 15px;
+}
+
+#buttons-container {
+    margin-top: 20px;
+    padding-left: 130px;
+    padding-right: 130px;
+}
+
+button {
+    margin-top: 4px
 }

@@ -6,6 +6,13 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="lib/jquery-asRange/dist/css/asRange.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link rel="stylesheet" href="lib/pheasant-buttons-main/dist/css/pheasant-demure-buttons-reset.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="lib/pheasant-buttons-main/dist/css/pheasant-demure-buttons-layout.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="lib/pheasant-buttons-main/dist/css/pheasant-demure-buttons.css" type="text/css" media="all" />
 
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/crop-selector.css">
@@ -18,7 +25,7 @@
 
 <body>
     <div id="container">
-        <h1 align="center" class="main-title">AnimPicMaker - the tool for making animated pictures (WEBP, GIF) from video</h1>
+        <h2 align="center" class="main-title">AnimPicMaker - the tool for making animated pictures (WEBP, GIF) from video</h2>
         <br>
         <div class="drag-area">
             <div class="icon"><i class="fas fa-cloud-upload-alt"></i></div>
@@ -46,13 +53,32 @@
                 <div id="trimmer-slider-container">
                     <input id="trimmer-slider" type="text" min="0" max="10" value="0,10" name="points" step="0.01" />
                 </div>
+
+
+            </div>
+            <div id="buttons-container">
+                <button id="trim-left-button" type="button" class="pheasant-demure-button outline light hover blink">
+                    <span class="label">{</span>
+                </button>
+                <button id="trim-right-button" type="button" class="pheasant-demure-button outline light hover blink">
+                    <span class="label">}</span>
+                </button>
+                <button id="save-cropped-button" type="button" class="pheasant-demure-button outline light hover blink">
+                    <p>Save Cropped Fragment</p>
+                </button>
+                <button id="save-trimmed-button" type="button" class="pheasant-demure-button outline light hover blink">
+                    <p>Save Trimmed Fragment</p>
+                </button>
+                <button id="save-webp-button" type="button" class="pheasant-demure-button outline light hover blink">
+                    <p>Save WEBP</p>
+                </button>
+                <button id="save-gif-button" type="button" class="pheasant-demure-button outline light hover blink">
+                    <p>Save GIF</p>
+                </button>
             </div>
         </div>
 
-        <footer>
-            <br>
-            <br>
-        </footer>
+        <br>
     </div>
 
 
