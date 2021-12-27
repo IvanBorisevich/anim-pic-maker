@@ -1,7 +1,3 @@
-* {
-    box-sizing: unset !important;
-}
-
 body {
     background-color: #5256ad;
 }
@@ -21,45 +17,6 @@ body {
     margin: auto;
 }
 
-#video-container,
-#tool-panel {
-    width: 590px;
-}
-
-#video-container {
-    height: 340px;
-    margin: auto;
-    position: relative;
-    border: 1px dashed #97C5DC;
-    border-radius: 4px;
-}
-
-#video-holder,
-#crop-selector-container {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-}
-
-#my-video {
-    width: 100% !important;
-    height: 100% !important;
-}
-
-#tool-panel {
-    margin: auto;
-    padding-top: 10px;
-}
-
-.asRange {
-    width: 100%;
-}
-
-#player-slider-container,
-#trimmer-slider-container {
-    padding: 15px;
-}
-
 #operation-buttons-container,
 #player-buttons-container {
     padding-left: 130px;
@@ -72,6 +29,6 @@ body {
     margin-top: 10px;
 }
 
-button {
+.pheasant-demure-button {
     margin: 3px;
 }

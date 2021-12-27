@@ -18,11 +18,12 @@
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/crop-selector.css">
     <link rel="stylesheet" href="css/upload-file-area.css">
-    <link rel="stylesheet" href="css/sliders.css">
+    <link rel="stylesheet" href="css/player.css">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="lib/jquery-asRange/dist/jquery-asRange.min.js"></script>
+
 </head>
 
 <body>
@@ -39,7 +40,7 @@
         <div id="video-processing-tool">
             <div id="video-container">
                 <div id="video-holder">
-                    <video id="my-video" autoplay></video>
+                    <video id="my-video"></video>
                 </div>
                 <div id="crop-selector-container">
                     <div id="resizable"></div>
@@ -47,10 +48,18 @@
             </div>
             <div id="tool-panel">
                 <div id="player-slider-container">
-                    <input id="player-slider" type="text" min="0" max="10" value="0" name="points" step="0.01" />
+                    <input id="player-slider" type="text" min="0" max="100" value="0" name="points" step="1" />
+                    <div>
+                        <input id="player-current-time" class="video-time-textbox" type="text" />
+                        <input id="player-full-time" class="video-time-textbox" type="text" />
+                    </div>
                 </div>
                 <div id="trimmer-slider-container">
-                    <input id="trimmer-slider" type="text" min="0" max="10" value="0,10" name="points" step="0.01" />
+                    <input id="trimmer-slider" type="text" min="0" max="100" value="0,100" name="points" step="1" />
+                    <div>
+                        <input id="trimmer-start-time" class="video-time-textbox" type="text" />
+                        <input id="trimmer-end-time" class="video-time-textbox" type="text" />
+                    </div>
                 </div>
             </div>
             <div id="player-buttons-container">
@@ -86,22 +95,9 @@
 
     <script src="https://vjs.zencdn.net/7.17.0/video.min.js"></script>
 
+    <script src="js/player.js"></script>
     <script src="js/crop-selector.js"></script>
     <script src="js/upload-file-area.js"></script>
-
-    <script>
-        $(function($) {
-            $('#player-slider').asRange({
-                tip: false
-            });
-            $('#trimmer-slider').asRange({
-                range: true,
-                limit: true,
-                keyboard: true,
-                tip: false
-            });
-        });
-    </script>
 
 </body>
 
