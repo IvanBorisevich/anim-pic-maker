@@ -165,6 +165,10 @@ class VideoPlayer {
     calcPlayerSliderValueByVideoCurrentTime() {
         return this.video.currentTime / this.video.duration * 100;
     }
+
+    cropVideo() {
+
+    }
 }
 
 
@@ -239,6 +243,18 @@ class VideoTrimmer {
     onTrimmerButtonClickFinish() {
         this.trimmerButtonClicked = false;
     }
+
+    trimVideo() {
+
+    }
+
+    saveAsWebp() {
+
+    }
+
+    saveAsGif() {
+
+    }
 }
 
 
@@ -268,4 +284,21 @@ videoTrimmer.trimRightButton.mousedown(function() {
 
 videoTrimmer.trimRightButton.mouseup(function() {
     videoTrimmer.onTrimmerButtonClickFinish();
+});
+
+
+$("save-cropped-button").click(function() {
+    videoPlayer.cropVideo();
+});
+
+$("#save-trimmed-button").click(function() {
+    videoTrimmer.trimVideo();
+});
+
+$("#save-webp-button").click(function() {
+    videoTrimmer.saveAsWebp();
+});
+
+$("#save-gif-button").click(function() {
+    videoTrimmer.saveAsGif();
 });
