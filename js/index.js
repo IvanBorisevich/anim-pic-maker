@@ -75,6 +75,30 @@ class VideoPlayer {
 
         var fileURL = URL.createObjectURL(file);
         this.video.src = fileURL;
+
+        if (videoPlayer.video.readyState >= 2) {
+            this.onMetadataLoaded();
+        }
+    }
+
+    onMetadataLoaded() {
+        this.videoWidth = this.video.videoWidth;
+        this.videoHeight = this.video.videoHeight;
+        this.videoRatio = this.videoWidth / this.videoHeight;
+
+        this.cropperContainerWidth = this.video.offsetWidth;
+        this.cropperContainerHeight = this.video.offsetHeight;
+        this.cropperContainerRatio = this.cropperContainerWidth / this.cropperContainerHeight;
+
+        if (this.cropperContainerRatio > this.videoRatio) {
+            this.cropperContainerWidth = this.cropperContainerHeight * this.videoRatio;
+            this.cropperContainerHorizontalMargin = (this.video.offsetWidth - this.cropperContainerWidth) / 2;
+        } else {
+            this.cropperContainerHeight = this.cropperContainerWidth / this.videoRatio;
+            this.cropperContainerVerticalMargin = (this.video.offsetHeight - this.cropperContainerHeight) / 2;
+        }
+
+        this.alignCropperWithVideo();
     }
 
     onPlayPauseButtonClick() {
@@ -104,6 +128,17 @@ class VideoPlayer {
         this.playerSliderValue = SLIDERS_MIN_VALUE;
         this.setPlayPauseButtonText(this.VideoActions.PLAY);
         this.updatePlayerSliderProgressCSS();
+    }
+
+    alignCropperWithVideo() {
+        $("#crop-selector-container").css({
+            maxWidth: this.cropperContainerWidth + 'px',
+            maxHeight: this.cropperContainerHeight + 'px',
+            marginLeft: this.cropperContainerHorizontalMargin + 'px',
+            right: this.cropperContainerHorizontalMargin + 'px',
+            marginTop: this.cropperContainerVerticalMargin + 'px',
+            marginBottom: this.cropperContainerVerticalMargin + 'px'
+        });
     }
 
     updatePlayerSliderProgressCSS() {
@@ -143,6 +178,10 @@ videoPlayer.video.ontimeupdate = () => {
     videoPlayer.onVideoTimeUpdate();
 };
 
+videoPlayer.video.onloadedmetadata = () => {
+    videoPlayer.onMetadataLoaded();
+};
+
 videoPlayer.playPauseButton.click(function() {
     videoPlayer.onPlayPauseButtonClick();
 });
@@ -153,7 +192,6 @@ videoPlayer.playerSlider.asRange({
         videoPlayer.onPlayerSliderValueChange(newPlayerSliderValue);
     }
 });
-
 
 
 
