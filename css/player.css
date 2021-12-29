@@ -1,3 +1,65 @@
+* {
+    box-sizing: unset;
+}
+
+#resizable {
+    border: 1px dotted #649ddf;
+    background: transparent;
+    width: 100%;
+    height: 100%;
+}
+
+.ui-resizable-ne,
+.ui-resizable-se,
+.ui-resizable-sw,
+.ui-resizable-nw,
+.ui-resizable-w,
+.ui-resizable-s,
+.ui-resizable-e,
+.ui-resizable-n {
+    width: 8px;
+    height: 8px;
+    background-color: #649ddf;
+}
+
+.ui-resizable-se.ui-icon {
+    background-image: none;
+}
+
+.ui-resizable-e,
+.ui-resizable-se,
+.ui-resizable-ne {
+    right: -1px;
+}
+
+.ui-resizable-s,
+.ui-resizable-se,
+.ui-resizable-sw {
+    bottom: -1px;
+}
+
+.ui-resizable-w,
+.ui-resizable-nw,
+.ui-resizable-sw {
+    left: -1px;
+}
+
+.ui-resizable-n,
+.ui-resizable-ne,
+.ui-resizable-nw {
+    top: -1px;
+}
+
+.ui-resizable-w,
+.ui-resizable-e {
+    top: calc(50% - 4px);
+}
+
+.ui-resizable-s,
+.ui-resizable-n {
+    left: calc(50% - 4px);
+}
+
 .asRange-pointer-1,
 .asRange-pointer-2 {
     cursor: pointer;
@@ -45,6 +107,7 @@
     position: relative;
     border: 1px dashed #97C5DC;
     border-radius: 4px;
+    box-sizing: border-box;
 }
 
 #video-holder,

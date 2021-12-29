@@ -11,11 +11,9 @@ class VideoPlayer {
         this.video = document.getElementById("my-video");
         this.playPauseButton = $("#play-pause-button");
         this.playerSlider = $("#player-slider");
+        this.cropperContainer = $("#crop-selector-container");
         this.cropper = $("#resizable");
-        this.cropper.resizable({
-            handles: "n, e, s, w, ne, se, sw, nw",
-            containment: "parent"
-        });
+        this.cropper.hide();
 
         this.playerSliderValue = parseInt(this.playerSlider.attr("value") || SLIDERS_MIN_VALUE);
         this.isVideoTimeChangedFromOutside = false;
@@ -82,23 +80,52 @@ class VideoPlayer {
     }
 
     onMetadataLoaded() {
-        this.videoWidth = this.video.videoWidth;
-        this.videoHeight = this.video.videoHeight;
-        this.videoRatio = this.videoWidth / this.videoHeight;
+        this.cropper.show();
 
-        this.cropperContainerWidth = this.video.offsetWidth;
-        this.cropperContainerHeight = this.video.offsetHeight;
-        this.cropperContainerRatio = this.cropperContainerWidth / this.cropperContainerHeight;
+        var videoWidth = this.video.videoWidth;
+        var videoHeight = this.video.videoHeight;
+        var videoRatio = videoWidth / videoHeight;
 
-        if (this.cropperContainerRatio > this.videoRatio) {
-            this.cropperContainerWidth = this.cropperContainerHeight * this.videoRatio;
-            this.cropperContainerHorizontalMargin = (this.video.offsetWidth - this.cropperContainerWidth) / 2;
+        var cropperContainerWidth = this.video.offsetWidth;
+        var cropperContainerHeight = this.video.offsetHeight;
+        var cropperContainerRatio = cropperContainerWidth / cropperContainerHeight;
+        var cropperContainerMargin = {};
+
+        if (cropperContainerRatio > videoRatio) {
+            cropperContainerWidth = cropperContainerHeight * videoRatio;
+            var cropperContainerHorizontalMargin = (this.video.offsetWidth - cropperContainerWidth) / 2;
+            cropperContainerMargin.left = cropperContainerHorizontalMargin;
+            cropperContainerMargin.right = cropperContainerHorizontalMargin;
         } else {
-            this.cropperContainerHeight = this.cropperContainerWidth / this.videoRatio;
-            this.cropperContainerVerticalMargin = (this.video.offsetHeight - this.cropperContainerHeight) / 2;
+            cropperContainerHeight = cropperContainerWidth / videoRatio;
+            var cropperContainerVerticalMargin = (this.video.offsetHeight - cropperContainerHeight) / 2;
+            cropperContainerMargin.top = cropperContainerVerticalMargin;
+            cropperContainerMargin.bottom = cropperContainerVerticalMargin;
         }
 
-        this.alignCropperWithVideo();
+        this.cropperContainerParams = {
+            maxWidth: cropperContainerWidth,
+            width: cropperContainerWidth,
+            maxHeight: cropperContainerHeight,
+            height: cropperContainerHeight,
+            margin: cropperContainerMargin
+        }
+
+        this.cropperParams = {
+            maxWidth: cropperContainerWidth,
+            width: cropperContainerWidth,
+            maxHeight: cropperContainerHeight,
+            height: cropperContainerHeight,
+            margin: {
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0
+            }
+        }
+
+        this.alignCropperElementWithVideo(this.cropper, this.cropperParams);
+        this.alignCropperElementWithVideo(this.cropperContainer, this.cropperContainerParams);
     }
 
     onPlayPauseButtonClick() {
@@ -130,14 +157,29 @@ class VideoPlayer {
         this.updatePlayerSliderProgressCSS();
     }
 
-    alignCropperWithVideo() {
-        $("#crop-selector-container").css({
-            maxWidth: this.cropperContainerWidth + 'px',
-            maxHeight: this.cropperContainerHeight + 'px',
-            marginLeft: this.cropperContainerHorizontalMargin + 'px',
-            right: this.cropperContainerHorizontalMargin + 'px',
-            marginTop: this.cropperContainerVerticalMargin + 'px',
-            marginBottom: this.cropperContainerVerticalMargin + 'px'
+    onCropperResize(resizeParams) {
+        this.cropperParams = {
+            width: resizeParams.size.width,
+            height: resizeParams.size.height,
+            margin: {
+                left: resizeParams.position.left,
+                right: this.cropperContainerParams.width - resizeParams.position.left - resizeParams.size.width,
+                top: resizeParams.position.top,
+                bottom: this.cropperContainerParams.height - resizeParams.position.top - resizeParams.size.height
+            }
+        };
+    }
+
+    alignCropperElementWithVideo(cropperElement, cropperElementParams) {
+        cropperElement.css({
+            width: cropperElementParams.width + 'px',
+            maxWidth: cropperElementParams.maxWidth + 'px',
+            height: cropperElementParams.height + 'px',
+            maxHeight: cropperElementParams.maxHeight + 'px',
+            marginLeft: cropperElementParams.margin.left + 'px',
+            marginRight: cropperElementParams.margin.right + 'px',
+            marginTop: cropperElementParams.margin.top + 'px',
+            marginBottom: cropperElementParams.margin.bottom + 'px'
         });
     }
 
@@ -194,6 +236,14 @@ videoPlayer.playerSlider.asRange({
     tip: false,
     onChange: function(newPlayerSliderValue) {
         videoPlayer.onPlayerSliderValueChange(newPlayerSliderValue);
+    }
+});
+
+videoPlayer.cropper.resizable({
+    handles: "n, e, s, w, ne, se, sw, nw",
+    containment: "parent",
+    resize: function(event, resizeParams) {
+        videoPlayer.onCropperResize(resizeParams);
     }
 });
 
