@@ -152,9 +152,7 @@ class VideoPlayer {
     }
 
     onVideoFinish() {
-        this.playerSliderValue = SLIDERS_MIN_VALUE;
         this.setPlayPauseButtonText(this.VideoActions.PLAY);
-        this.updatePlayerSliderProgressCSS();
     }
 
     onCropperResize(resizeParams) {
@@ -209,7 +207,26 @@ class VideoPlayer {
     }
 
     saveJustCropped() {
+        var x = this.video.videoWidth * this.cropperParams.margin.left / this.cropperContainerParams.width;
+        var y = this.video.videoHeight * this.cropperParams.margin.top / this.cropperContainerParams.height;
+        var croppedWidth = this.video.videoWidth * this.cropperParams.width / this.cropperContainerParams.width;
+        var croppedHeight = this.video.videoHeight * this.cropperParams.height / this.cropperContainerParams.height;
 
+        var requestBody = {
+            x: x,
+            y: y,
+            croppedWidth: croppedWidth,
+            croppedHeight: croppedHeight
+        }
+
+        $.ajax({
+            type: "POST",
+            url: '/save-just-cropped',
+            data: requestBody,
+            success: function() {
+                console.log("cropped video saved");
+            }
+        });
     }
 }
 
@@ -304,18 +321,34 @@ class VideoTrimmer {
             type: "POST",
             url: '/save-just-trimmed',
             data: requestBody,
-            success: function() {
-                console.log("trimmed video saved");
-            }
+            success: function() {}
         });
     }
 
     saveProcessedAsWebp() {
+        var requestBody = {
 
+        };
+
+        $.ajax({
+            type: "POST",
+            url: '/save-as-webp',
+            data: requestBody,
+            success: function() {}
+        });
     }
 
     saveProcessedAsGif() {
+        var requestBody = {
 
+        };
+
+        $.ajax({
+            type: "POST",
+            url: '/save-as-gif',
+            data: requestBody,
+            success: function() {}
+        });
     }
 }
 

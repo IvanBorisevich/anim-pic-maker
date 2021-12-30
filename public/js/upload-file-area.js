@@ -47,7 +47,6 @@ function showFile() {
         method: 'POST',
         type: 'POST',
         success: function() {
-            console.log("Video uploaded successfully!");
             dropArea.style.display = "none";
             videoProcessingTool.hidden = false;
             videoPlayer.loadVideo(file);
