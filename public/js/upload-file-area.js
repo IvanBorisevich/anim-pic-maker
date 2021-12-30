@@ -1,7 +1,7 @@
 const dropArea = document.querySelector(".drag-area"),
-    dragText = dropArea.querySelector("header"),
-    button = dropArea.querySelector("button"),
-    input = dropArea.querySelector("input"),
+    dragText = dropArea.querySelector("#drag-n-drop-header"),
+    button = dropArea.querySelector("#browse-file"),
+    input = dropArea.querySelector("#input-file"),
     videoProcessingTool = document.querySelector("#video-processing-tool");
 
 // videoProcessingTool.hidden = true;
@@ -34,19 +34,23 @@ dropArea.addEventListener("drop", (event) => {
 });
 
 function showFile() {
-    let fileType = file.type;
-    let validExtensions = ["video/mp4", "video/avi", "video/mkv"];
-    if (validExtensions.includes(fileType)) {
-        let fileReader = new FileReader();
-        fileReader.onload = () => {
+    var data = new FormData();
+    var file = $('#input-file')[0].files[0];
+    data.append('file', file);
+
+    $.ajax({
+        url: '/upload-video',
+        data: data,
+        cache: false,
+        contentType: false,
+        processData: false,
+        method: 'POST',
+        type: 'POST',
+        success: function() {
+            console.log("Video uploaded successfully!");
             dropArea.style.display = "none";
             videoProcessingTool.hidden = false;
-            videoPlayer.loadVideo(file)
+            videoPlayer.loadVideo(file);
         }
-        fileReader.readAsDataURL(file);
-    } else {
-        alert("This is not a Video File!");
-        dropArea.classList.remove("active");
-        dragText.textContent = "Drag & Drop to Upload File";
-    }
+    });
 }

@@ -208,7 +208,7 @@ class VideoPlayer {
         return this.video.currentTime / this.video.duration * 100;
     }
 
-    cropVideo() {
+    saveJustCropped() {
 
     }
 }
@@ -294,15 +294,17 @@ class VideoTrimmer {
         this.trimmerButtonClicked = false;
     }
 
-    trimVideo() {
+    saveJustTrimmed() {
+        $.post('/save-just-trimmed', function() {
+            alert("success");
+        });
+    }
+
+    saveProcessedAsWebp() {
 
     }
 
-    saveAsWebp() {
-
-    }
-
-    saveAsGif() {
+    saveProcessedAsGif() {
 
     }
 }
@@ -337,18 +339,18 @@ videoTrimmer.trimRightButton.mouseup(function() {
 });
 
 
-$("save-cropped-button").click(function() {
-    videoPlayer.cropVideo();
+$("#save-cropped-button").click(function() {
+    videoPlayer.saveJustCropped();
 });
 
 $("#save-trimmed-button").click(function() {
-    videoTrimmer.trimVideo();
+    videoTrimmer.saveJustTrimmed();
 });
 
 $("#save-webp-button").click(function() {
-    videoTrimmer.saveAsWebp();
+    videoTrimmer.saveProcessedAsWebp();
 });
 
 $("#save-gif-button").click(function() {
-    videoTrimmer.saveAsGif();
+    videoTrimmer.saveProcessedAsGif();
 });
