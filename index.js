@@ -115,10 +115,6 @@ app.post('/save-as-webp', function(req, res) {
     createDirIfNotExists(CONVERTED_FILES_DIR_PATH);
     var outputFilePath = getOutputFilePath(uploadedVideoPath, CONVERTED_FILES_POSTFIX, 'webp');
 
-    var command = `ffmpeg -i ${uploadedVideoPath} -ss ${req.body.trimStartTime} -to ${req.body.trimEndTime} -vcodec libwebp -preset default -loop 0 -an -vsync 0 \\
-                          -vf "fps=${req.body.framerate},scale=${req.body.animPicWidth}:${req.body.animPicHeight},crop=${req.body.croppedWidth}:${req.body.croppedHeight}:${req.body.croppedX}:${req.body.croppedY}" \\
-                          -qscale ${req.body.qualityPercentage} ${outputFilePath}`;
-
     var loopFlag = req.body.isLooped ? 0 : 1;
     var cropX = req.body.croppedX;
     var cropY = req.body.croppedY;
@@ -127,11 +123,12 @@ app.post('/save-as-webp', function(req, res) {
     var trimA = req.body.trimStartTime;
     var trimB = req.body.trimEndTime;
     var framerate = req.body.framerate;
+    var quality = req.body.qualityPercentage;
 
     var command =
         `ffmpeg -i ${uploadedVideoPath} -vcodec libwebp -preset default -loop ${loopFlag} -an -vsync 0 \\
     -vf "scale=(iw*sar)*max(${cropW}/(iw*sar)\\,${cropH}/ih):ih*max(${cropW}/(iw*sar)\\,${cropH}/ih),crop=${cropW}:${cropH}:${cropX}:${cropY},trim=${trimA}:${trimB},fps=${framerate}" \\
-    -qscale ${req.body.qualityPercentage} ${outputFilePath}`;
+    -qscale ${quality} ${outputFilePath}`;
 
     exec(command, (error, stdout, stderr) => {
         if (error) {
