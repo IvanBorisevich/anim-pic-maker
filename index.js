@@ -124,11 +124,20 @@ app.post('/save-as-webp', function(req, res) {
     var trimB = req.body.trimEndTime;
     var framerate = req.body.framerate;
     var quality = req.body.qualityPercentage;
+    var concatReversed = req.body.concatReversed;
 
-    var command =
-        `ffmpeg -i ${uploadedVideoPath} -vcodec libwebp -preset default -loop ${loopFlag} -an -vsync 0 \\
-    -vf "scale=(iw*sar)*max(${cropW}/(iw*sar)\\,${cropH}/ih):ih*max(${cropW}/(iw*sar)\\,${cropH}/ih),crop=${cropW}:${cropH}:${cropX}:${cropY},trim=${trimA}:${trimB},fps=${framerate}" \\
-    -qscale ${quality} ${outputFilePath}`;
+    var command;
+    if (concatReversed) {
+        command =
+            `ffmpeg -ss ${trimA} -to ${trimB} -i ${uploadedVideoPath} \\
+            -filter_complex "reverse,fifo[r];[0:v][r] concat=n=2:v=1,crop=${cropW}:${cropH}:${cropX}:${cropY},fps=${framerate}[v]" -map "[v]" \\
+            -vcodec libwebp -preset default -an -vsync 0 -loop ${loopFlag} -qscale ${quality} ${outputFilePath}`;
+    } else {
+        command =
+            `ffmpeg -ss ${trimA} -to ${trimB} -i ${uploadedVideoPath} \\
+            -vf "crop=${cropW}:${cropH}:${cropX}:${cropY},fps=${framerate}" \\
+            -vcodec libwebp -preset default -an -vsync 0 -loop ${loopFlag} -qscale ${quality} ${outputFilePath}`;
+    }
 
     exec(command, (error, stdout, stderr) => {
         if (error) {

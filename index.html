@@ -48,14 +48,14 @@
             <div id="tool-panel">
                 <div id="player-slider-container">
                     <input id="player-slider" type="text" min="0" max="100" value="0" name="points" step="1" />
-                    <div>
+                    <div id="player-timestamps" hidden>
                         <input id="player-current-time" class="video-time-textbox" type="text" />
                         <input id="player-full-time" class="video-time-textbox" type="text" />
                     </div>
                 </div>
                 <div id="trimmer-slider-container">
                     <input id="trimmer-slider" type="text" min="0" max="100" value="0,100" name="points" step="1" />
-                    <div>
+                    <div id="trimmer-timestamps" hidden>
                         <input id="trimmer-start-time" class="video-time-textbox" type="text" />
                         <input id="trimmer-end-time" class="video-time-textbox" type="text" />
                     </div>
@@ -72,13 +72,15 @@
                     <span class="label">]</span>
                 </button>
             </div>
-            <div id="operation-buttons-container">
+            <div class="operation-buttons-container">
                 <button id="save-cropped-button" type="button" class="pheasant-demure-button outline light hover blink">
                     <p>Save Cropped Fragment</p>
                 </button>
                 <button id="save-trimmed-button" type="button" class="pheasant-demure-button outline light hover blink">
                     <p>Save Trimmed Fragment</p>
                 </button>
+            </div>
+            <div class="operation-buttons-container">
                 <button id="save-webp-button" type="button" class="pheasant-demure-button outline light hover blink">
                     <p>Save WEBP</p>
                 </button>

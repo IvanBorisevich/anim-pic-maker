@@ -153,6 +153,9 @@ class VideoPlayer {
 
     onVideoFinish() {
         this.setPlayPauseButtonText(this.VideoActions.PLAY);
+        this.video.currentTime = 0;
+        this.playerSliderValue = 0;
+        this.updatePlayerSliderProgressCSS();
     }
 
     onCropperResize(resizeParams) {
@@ -324,9 +327,10 @@ class VideoTrimmer {
         requestBody.croppedY = Math.round(this.videoPlayer.video.videoHeight * this.videoPlayer.cropperParams.margin.top / this.videoPlayer.cropperContainerParams.height);
         requestBody.croppedWidth = Math.round(this.videoPlayer.video.videoWidth * this.videoPlayer.cropperParams.width / this.videoPlayer.cropperContainerParams.width);
         requestBody.croppedHeight = Math.round(this.videoPlayer.video.videoHeight * this.videoPlayer.cropperParams.height / this.videoPlayer.cropperContainerParams.height);
-        requestBody.framerate = 40;
+        requestBody.framerate = 30;
         requestBody.qualityPercentage = 60;
         requestBody.isLooped = true;
+        requestBody.concatReversed = true;
 
         $.ajax({
             type: "POST",

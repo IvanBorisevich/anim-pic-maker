@@ -17,7 +17,7 @@ body {
     margin: auto;
 }
 
-#operation-buttons-container,
+.operation-buttons-container,
 #player-buttons-container {
     padding-left: 130px;
     padding-right: 130px;
