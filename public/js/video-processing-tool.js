@@ -55,7 +55,7 @@ class VideoPlayer {
             this.pauseVideo();
             this.setPlayPauseButtonText(this.VideoActions.PLAY);
         }
-        this.setVideoCurrentTime(this.calcVideoCurrentTimeByPlayerSliderValue());
+        this.setVideoCurrentTime(this.calcVideoCurrentTimeByPlayerSliderValue(this.playerSliderValue));
     }
 
     loadVideo(file) {
@@ -200,8 +200,8 @@ class VideoPlayer {
         this.video.currentTime = currentTime;
     }
 
-    calcVideoCurrentTimeByPlayerSliderValue() {
-        return this.video.duration * this.playerSliderValue / 100;
+    calcVideoCurrentTimeByPlayerSliderValue(playerSliderValue) {
+        return this.video.duration * playerSliderValue / 100;
     }
 
     calcPlayerSliderValueByVideoCurrentTime() {
@@ -295,8 +295,18 @@ class VideoTrimmer {
     }
 
     saveJustTrimmed() {
-        $.post('/save-just-trimmed', function() {
-            alert("success");
+        var requestBody = {
+            startTime: this.videoPlayer.calcVideoCurrentTimeByPlayerSliderValue(this.trimmerSliderValues[0]),
+            endTime: this.videoPlayer.calcVideoCurrentTimeByPlayerSliderValue(this.trimmerSliderValues[1])
+        };
+
+        $.ajax({
+            type: "POST",
+            url: '/save-just-trimmed',
+            data: requestBody,
+            success: function() {
+                console.log("trimmed video saved");
+            }
         });
     }
 

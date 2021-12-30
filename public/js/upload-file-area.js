@@ -4,7 +4,7 @@ const dropArea = document.querySelector(".drag-area"),
     input = dropArea.querySelector("#input-file"),
     videoProcessingTool = document.querySelector("#video-processing-tool");
 
-// videoProcessingTool.hidden = true;
+videoProcessingTool.hidden = true;
 
 let file;
 button.onclick = () => {
