@@ -223,9 +223,7 @@ class VideoPlayer {
             type: "POST",
             url: '/save-just-cropped',
             data: requestBody,
-            success: function() {
-                console.log("cropped video saved");
-            }
+            success: function() {}
         });
     }
 }

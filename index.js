@@ -6,6 +6,8 @@ var ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 var ffmpeg = require('fluent-ffmpeg');
 ffmpeg.setFfmpegPath(ffmpegPath);
 
+const { exec } = require("child_process");
+
 const UPLOADED_FILES_DIR_NAME = 'uploaded_videos';
 const UPLOADED_FILES_DIR_PATH = __dirname + '/' + UPLOADED_FILES_DIR_NAME;
 const CONVERTED_FILES_DIR_NAME = 'output';
@@ -29,8 +31,8 @@ app.get('/', function(req, res) {
 
 var uploadedVideoPath;
 
-function getOutputFilePath(inputFilePath, postfix) {
-    var inputFileExtension = path.extname(inputFilePath);
+function getOutputFilePath(inputFilePath, postfix, outputExt = null) {
+    var inputFileExtension = outputExt != null ? '.' + outputExt : path.extname(inputFilePath);
     var outputFileName = path.basename(inputFilePath, inputFileExtension) +
         '_' + postfix +
         '_' + Date.now() + inputFileExtension;
@@ -90,7 +92,6 @@ app.post('/save-just-trimmed', function(req, res) {
 
 
 app.post('/save-just-cropped', function(req, res) {
-    console.log("crop, input file path: " + uploadedVideoPath);
     createDirIfNotExists(CONVERTED_FILES_DIR_PATH);
     var outputFilePath = getOutputFilePath(uploadedVideoPath, CROPPED_VIDEO_POSTFIX);
 
@@ -111,6 +112,30 @@ app.post('/save-just-cropped', function(req, res) {
 
 app.post('/save-as-webp', function(req, res) {
     createDirIfNotExists(CONVERTED_FILES_DIR_PATH);
+    var outputFilePath = getOutputFilePath(uploadedVideoPath, CONVERTED_FILES_POSTFIX, 'webp');
+
+    var framerate = 30;
+    var width = 500;
+    var height = 900;
+    var quantity = 60;
+
+    var command = `ffmpeg -i ${uploadedVideoPath} -vcodec libwebp -preset default -loop 0 -an -vsync 0 \\
+                          -vf "fps=${framerate}, scale=${width}:${height}" -qscale ${quantity} ${outputFilePath}`;
+
+    console.log(command);
+
+    exec(command, (error, stdout, stderr) => {
+        if (error) {
+            console.log(`error: ${error.message}`);
+            return;
+        }
+        if (stderr) {
+            console.log(`stderr: ${stderr}`);
+            return;
+        }
+        console.log(`Success! Stdout: ${stdout}`);
+    });
+
     res.status(200).send();
 });
 
