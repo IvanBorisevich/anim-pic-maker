@@ -32,10 +32,11 @@ app.get('/', function(req, res) {
 var uploadedVideoPath;
 
 function getOutputFilePath(inputFilePath, postfix, outputExt = null) {
-    var inputFileExtension = outputExt != null ? '.' + outputExt : path.extname(inputFilePath);
+    var inputFileExtension = path.extname(inputFilePath);
+    var outputFileExtension = outputExt != null ? '.' + outputExt : inputFileExtension;
     var outputFileName = path.basename(inputFilePath, inputFileExtension) +
         '_' + postfix +
-        '_' + Date.now() + inputFileExtension;
+        '_' + Date.now() + outputFileExtension;
     return CONVERTED_FILES_DIR_PATH + '/' + outputFileName;
 }
 
@@ -73,12 +74,12 @@ app.post('/save-just-trimmed', function(req, res) {
     createDirIfNotExists(CONVERTED_FILES_DIR_PATH);
     var outputFilePath = getOutputFilePath(uploadedVideoPath, TRIMMED_VIDEO_POSTFIX);
 
-    var startTime = req.body.startTime;
-    var duration = req.body.endTime - startTime;
+    var startTimeInSec = req.body.trimStartTime;
+    var durationInSec = req.body.trimEndTime - startTime;
 
     ffmpeg(uploadedVideoPath)
-        .setStartTime(startTime)
-        .setDuration(duration)
+        .setStartTime(startTimeInSec)
+        .setDuration(durationInSec)
         .output(outputFilePath)
         .on('end', function(err) {
             if (!err) { console.log('Trimmed successfully!') }
@@ -96,7 +97,7 @@ app.post('/save-just-cropped', function(req, res) {
     var outputFilePath = getOutputFilePath(uploadedVideoPath, CROPPED_VIDEO_POSTFIX);
 
     ffmpeg(uploadedVideoPath)
-        .videoFilters(`crop=${req.body.croppedWidth}:${req.body.croppedHeight}:${req.body.x}:${req.body.y}`)
+        .videoFilters(`crop=${req.body.croppedWidth}:${req.body.croppedHeight}:${req.body.croppedX}:${req.body.croppedY}`)
         .on('end', function(err) {
             if (!err) { console.log('Cropped successfully!') }
         })
@@ -114,15 +115,23 @@ app.post('/save-as-webp', function(req, res) {
     createDirIfNotExists(CONVERTED_FILES_DIR_PATH);
     var outputFilePath = getOutputFilePath(uploadedVideoPath, CONVERTED_FILES_POSTFIX, 'webp');
 
-    var framerate = 30;
-    var width = 500;
-    var height = 900;
-    var quantity = 60;
+    var command = `ffmpeg -i ${uploadedVideoPath} -ss ${req.body.trimStartTime} -to ${req.body.trimEndTime} -vcodec libwebp -preset default -loop 0 -an -vsync 0 \\
+                          -vf "fps=${req.body.framerate},scale=${req.body.animPicWidth}:${req.body.animPicHeight},crop=${req.body.croppedWidth}:${req.body.croppedHeight}:${req.body.croppedX}:${req.body.croppedY}" \\
+                          -qscale ${req.body.qualityPercentage} ${outputFilePath}`;
 
-    var command = `ffmpeg -i ${uploadedVideoPath} -vcodec libwebp -preset default -loop 0 -an -vsync 0 \\
-                          -vf "fps=${framerate}, scale=${width}:${height}" -qscale ${quantity} ${outputFilePath}`;
+    var loopFlag = req.body.isLooped ? 0 : 1;
+    var cropX = req.body.croppedX;
+    var cropY = req.body.croppedY;
+    var cropW = req.body.croppedWidth;
+    var cropH = req.body.croppedHeight;
+    var trimA = req.body.trimStartTime;
+    var trimB = req.body.trimEndTime;
+    var framerate = req.body.framerate;
 
-    console.log(command);
+    var command =
+        `ffmpeg -i ${uploadedVideoPath} -vcodec libwebp -preset default -loop ${loopFlag} -an -vsync 0 \\
+    -vf "scale=(iw*sar)*max(${cropW}/(iw*sar)\\,${cropH}/ih):ih*max(${cropW}/(iw*sar)\\,${cropH}/ih),crop=${cropW}:${cropH}:${cropX}:${cropY},trim=${trimA}:${trimB},fps=${framerate}" \\
+    -qscale ${req.body.qualityPercentage} ${outputFilePath}`;
 
     exec(command, (error, stdout, stderr) => {
         if (error) {

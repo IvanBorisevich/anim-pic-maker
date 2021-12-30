@@ -207,17 +207,11 @@ class VideoPlayer {
     }
 
     saveJustCropped() {
-        var x = this.video.videoWidth * this.cropperParams.margin.left / this.cropperContainerParams.width;
-        var y = this.video.videoHeight * this.cropperParams.margin.top / this.cropperContainerParams.height;
-        var croppedWidth = this.video.videoWidth * this.cropperParams.width / this.cropperContainerParams.width;
-        var croppedHeight = this.video.videoHeight * this.cropperParams.height / this.cropperContainerParams.height;
-
-        var requestBody = {
-            x: x,
-            y: y,
-            croppedWidth: croppedWidth,
-            croppedHeight: croppedHeight
-        }
+        var requestBody = {};
+        requestBody.croppedX = Math.round(this.video.videoWidth * this.cropperParams.margin.left / this.cropperContainerParams.width);
+        requestBody.croppedY = Math.round(this.video.videoHeight * this.cropperParams.margin.top / this.cropperContainerParams.height);
+        requestBody.croppedWidth = Math.round(this.video.videoWidth * this.cropperParams.width / this.cropperContainerParams.width);
+        requestBody.croppedHeight = Math.round(this.video.videoHeight * this.cropperParams.height / this.cropperContainerParams.height);
 
         $.ajax({
             type: "POST",
@@ -310,10 +304,9 @@ class VideoTrimmer {
     }
 
     saveJustTrimmed() {
-        var requestBody = {
-            startTime: this.videoPlayer.calcVideoCurrentTimeByPlayerSliderValue(this.trimmerSliderValues[0]),
-            endTime: this.videoPlayer.calcVideoCurrentTimeByPlayerSliderValue(this.trimmerSliderValues[1])
-        };
+        var requestBody = {};
+        requestBody.trimStartTime = this.videoPlayer.calcVideoCurrentTimeByPlayerSliderValue(this.trimmerSliderValues[0]);
+        requestBody.trimEndTime = this.videoPlayer.calcVideoCurrentTimeByPlayerSliderValue(this.trimmerSliderValues[1]);
 
         $.ajax({
             type: "POST",
@@ -324,15 +317,24 @@ class VideoTrimmer {
     }
 
     saveProcessedAsWebp() {
-        var requestBody = {
-
-        };
+        var requestBody = {};
+        requestBody.trimStartTime = this.videoPlayer.calcVideoCurrentTimeByPlayerSliderValue(this.trimmerSliderValues[0]);
+        requestBody.trimEndTime = this.videoPlayer.calcVideoCurrentTimeByPlayerSliderValue(this.trimmerSliderValues[1]);
+        requestBody.croppedX = Math.round(this.videoPlayer.video.videoWidth * this.videoPlayer.cropperParams.margin.left / this.videoPlayer.cropperContainerParams.width);
+        requestBody.croppedY = Math.round(this.videoPlayer.video.videoHeight * this.videoPlayer.cropperParams.margin.top / this.videoPlayer.cropperContainerParams.height);
+        requestBody.croppedWidth = Math.round(this.videoPlayer.video.videoWidth * this.videoPlayer.cropperParams.width / this.videoPlayer.cropperContainerParams.width);
+        requestBody.croppedHeight = Math.round(this.videoPlayer.video.videoHeight * this.videoPlayer.cropperParams.height / this.videoPlayer.cropperContainerParams.height);
+        requestBody.framerate = 40;
+        requestBody.qualityPercentage = 60;
+        requestBody.isLooped = true;
 
         $.ajax({
             type: "POST",
             url: '/save-as-webp',
             data: requestBody,
-            success: function() {}
+            success: function() {
+                console.log("Success webp");
+            }
         });
     }
 
@@ -347,6 +349,22 @@ class VideoTrimmer {
             data: requestBody,
             success: function() {}
         });
+    }
+
+    millisToTime(s) {
+        function pad(n, z) {
+            z = z || 2;
+            return ('00' + n).slice(-z);
+        }
+
+        var ms = s % 1000;
+        s = (s - ms) / 1000;
+        var secs = s % 60;
+        s = (s - secs) / 60;
+        var mins = s % 60;
+        var hrs = (s - mins) / 60;
+
+        return pad(hrs) + ':' + pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
     }
 }
 
