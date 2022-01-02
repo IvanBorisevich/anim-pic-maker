@@ -12,23 +12,3 @@ body {
     height: 100%;
     position: relative;
 }
-
-.drag-area {
-    margin: auto;
-}
-
-.operation-buttons-container,
-#player-buttons-container {
-    padding-left: 130px;
-    padding-right: 130px;
-    display: flex;
-    justify-content: center;
-}
-
-#player-buttons-container {
-    margin-top: 10px;
-}
-
-.pheasant-demure-button {
-    margin: 3px;
-}

@@ -17,11 +17,13 @@
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/upload-file-area.css">
     <link rel="stylesheet" href="css/player.css">
+    <link rel="stylesheet" href="css/timebox.css">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
     <script src="lib/jquery-asRange/dist/jquery-asRange.min.js"></script>
+    <script src="js/timebox.js"></script>
 
 </head>
 
@@ -48,16 +50,48 @@
             <div id="tool-panel">
                 <div id="player-slider-container">
                     <input id="player-slider" type="text" min="0" max="100" value="0" name="points" step="1" />
-                    <div id="player-timestamps" hidden>
-                        <input id="player-current-time" class="video-time-textbox" type="text" />
-                        <input id="player-full-time" class="video-time-textbox" type="text" />
+                    <div id="player-timestamps">
+                        <div id="player-current-time" class="timebox">
+                            <div class="timebox-text-container">
+                                <input type="text">
+                            </div>
+                            <div class="timebox-nav">
+                                <div class="timebox-button timebox-up disable-select"><a>&#9650;</a></div>
+                                <div class="timebox-button timebox-down disable-select"><a>&#9660;</a></div>
+                            </div>
+                        </div>
+                        <div id="player-full-time" class="timebox">
+                            <div class="timebox-text-container">
+                                <input type="text">
+                            </div>
+                            <div class="timebox-nav">
+                                <div class="timebox-button timebox-up disable-select"><a>&#9650;</a></div>
+                                <div class="timebox-button timebox-down disable-select"><a>&#9660;</a></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div id="trimmer-slider-container">
                     <input id="trimmer-slider" type="text" min="0" max="100" value="0,100" name="points" step="1" />
-                    <div id="trimmer-timestamps" hidden>
-                        <input id="trimmer-start-time" class="video-time-textbox" type="text" />
-                        <input id="trimmer-end-time" class="video-time-textbox" type="text" />
+                    <div id="trimmer-timestamps">
+                        <div id="trimmer-start-time" class="timebox">
+                            <div class="timebox-text-container">
+                                <input type="text">
+                            </div>
+                            <div class="timebox-nav">
+                                <div class="timebox-button timebox-up disable-select"><a>&#9650;</a></div>
+                                <div class="timebox-button timebox-down disable-select"><a>&#9660;</a></div>
+                            </div>
+                        </div>
+                        <div id="trimmer-end-time" class="timebox">
+                            <div class="timebox-text-container">
+                                <input type="text">
+                            </div>
+                            <div class="timebox-nav">
+                                <div class="timebox-button timebox-up disable-select"><a>&#9650;</a></div>
+                                <div class="timebox-button timebox-down disable-select"><a>&#9660;</a></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

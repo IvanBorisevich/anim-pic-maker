@@ -4,6 +4,7 @@ const SLIDERS_MAX_VALUE = 100;
 class VideoPlayer {
 
     constructor() {
+
         this.VideoActions = {
             PLAY: 'Play',
             PAUSE: 'Pause'
@@ -14,6 +15,12 @@ class VideoPlayer {
         this.cropperContainer = $("#crop-selector-container");
         this.cropper = $("#resizable");
         this.cropper.hide();
+        this.playerCurrentTimeBox = new TimeBox($('#player-current-time'));
+        this.playerCurrentTimeBox.setOnTimeValueChangeCallback(this.setVideoNewTime, this);
+
+        this.playerFullTimeBox = new TimeBox($('#player-full-time'), true);
+        this.trimmerStartTimeBox = new TimeBox($('#trimmer-start-time'));
+        this.trimmerEndTimeBox = new TimeBox($('#trimmer-end-time'));
 
         this.playerSliderValue = parseInt(this.playerSlider.attr("value") || SLIDERS_MIN_VALUE);
         this.isVideoTimeChangedFromOutside = false;
@@ -55,7 +62,22 @@ class VideoPlayer {
             this.pauseVideo();
             this.setPlayPauseButtonText(this.VideoActions.PLAY);
         }
-        this.setVideoCurrentTime(this.calcVideoCurrentTimeByPlayerSliderValue(this.playerSliderValue));
+
+        var videoCurrentTime = this.calcVideoCurrentTimeByPlayerSliderValue(this.playerSliderValue);
+        this.playerCurrentTimeBox.setTimeMillis(videoCurrentTime * 1000);
+        this.setVideoCurrentTime(videoCurrentTime);
+    }
+
+    setVideoNewTime(timeInSeconds) {
+        if (timeInSeconds > this.video.duration) {
+            timeInSeconds = this.video.duration;
+        }
+        if (this.isVideoPlayed()) {
+            this.pauseVideo();
+            this.setPlayPauseButtonText(this.VideoActions.PLAY);
+        }
+        this.setVideoCurrentTime(timeInSeconds);
+        this.setPlayerSliderValue(this.calcPlayerSliderValueByVideoCurrentTime(timeInSeconds));
     }
 
     loadVideo(file) {
@@ -81,6 +103,8 @@ class VideoPlayer {
 
     onMetadataLoaded() {
         this.cropper.show();
+        this.playerFullTimeBox.setTimeMillis(this.video.duration * 1000);
+        this.trimmerEndTimeBox.setTimeMillis(this.video.duration * 1000);
 
         var videoWidth = this.video.videoWidth;
         var videoHeight = this.video.videoHeight;
@@ -201,6 +225,10 @@ class VideoPlayer {
         this.video.currentTime = currentTime;
     }
 
+    getVideoCurrentTime() {
+        return this.video.currentTime;
+    }
+
     calcVideoCurrentTimeByPlayerSliderValue(playerSliderValue) {
         return this.video.duration * playerSliderValue / 100;
     }
@@ -280,10 +308,12 @@ class VideoTrimmer {
             if (this.trimmerSliderValues[0] == newTrimmerSliderValues[0] &&
                 this.trimmerSliderValues[1] != newTrimmerSliderValues[1]) {
                 this.videoPlayer.movePlayerSliderFromOutside(newTrimmerSliderValues[1]);
+                this.videoPlayer.trimmerEndTimeBox.setTimeMillis(this.videoPlayer.getVideoCurrentTime() * 1000);
             } else {
                 if (this.trimmerSliderValues[1] == newTrimmerSliderValues[1] &&
                     this.trimmerSliderValues[0] != newTrimmerSliderValues[0]) {
                     this.videoPlayer.movePlayerSliderFromOutside(newTrimmerSliderValues[0]);
+                    this.videoPlayer.trimmerStartTimeBox.setTimeMillis(this.videoPlayer.getVideoCurrentTime() * 1000);
                 }
             }
             this.trimmerSliderValues = newTrimmerSliderValues;
@@ -294,12 +324,14 @@ class VideoTrimmer {
         this.trimmerButtonClicked = true;
         this.trimmerSliderValues[0] = this.videoPlayer.getPlayerSliderValue();
         this.trimmerSlider.asRange('set', this.trimmerSliderValues);
+        this.videoPlayer.trimmerStartTimeBox.setTimeMillis(this.videoPlayer.getVideoCurrentTime() * 1000);
     }
 
     onTrimmerRightButtonClick() {
         this.trimmerButtonClicked = true;
         this.trimmerSliderValues[1] = this.videoPlayer.getPlayerSliderValue();
         this.trimmerSlider.asRange('set', this.trimmerSliderValues);
+        this.videoPlayer.trimmerEndTimeBox.setTimeMillis(this.videoPlayer.getVideoCurrentTime() * 1000);
     }
 
     onTrimmerButtonClickFinish() {
@@ -353,22 +385,6 @@ class VideoTrimmer {
             data: requestBody,
             success: function() {}
         });
-    }
-
-    millisToTime(s) {
-        function pad(n, z) {
-            z = z || 2;
-            return ('00' + n).slice(-z);
-        }
-
-        var ms = s % 1000;
-        s = (s - ms) / 1000;
-        var secs = s % 60;
-        s = (s - secs) / 60;
-        var mins = s % 60;
-        var hrs = (s - mins) / 60;
-
-        return pad(hrs) + ':' + pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
     }
 }
 

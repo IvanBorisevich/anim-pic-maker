@@ -1,0 +1,80 @@
+.timebox {
+    position: relative;
+    width: 140px;
+    height: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+
+.timebox-text-container {
+    height: 100%;
+}
+
+.timebox>.timebox-text-container>input {
+    width: 100%;
+    height: 100%;
+    font-size: 20px;
+    padding-left: 6px;
+    border: 2px #cfcdc7 solid !important;
+    border-radius: 5px 0 0 5px;
+    background-color: transparent !important;
+    color: #cfcdc7;
+}
+
+.timebox-nav {
+    float: right;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    width: 15px;
+    cursor: pointer;
+}
+
+.timebox-up,
+.timebox-down {
+    border: 2px solid #cfcdc7;
+    text-align: center;
+    border-left: 0;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-size: 10px;
+    background-color: transparent !important;
+    line-height: 1.1 !important;
+}
+
+.timebox-up a,
+.timebox-down a {
+    display: inline-block;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    color: #cfcdc7;
+}
+
+.disable-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.timebox-up {
+    border-radius: 0 5px 0 0;
+    border-bottom-width: 1px;
+}
+
+.timebox-down {
+    border-radius: 0 0 5px 0;
+    border-top-width: 1px;
+}
+
+.timebox input:focus-visible,
+.timebox-up:focus-visible,
+.timebox-down:focus-visible {
+    outline: none !important;
+}
+
+.timebox-nav>* {
+    flex: 0 0 100%;
+    box-sizing: border-box !important;
+}
