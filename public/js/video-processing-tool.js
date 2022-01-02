@@ -19,8 +19,8 @@ class VideoPlayer {
         this.playerCurrentTimeBox.setOnTimeValueChangeCallback(this.setVideoNewTime, this);
 
         this.playerFullTimeBox = new TimeBox($('#player-full-time'), true);
-        this.trimmerStartTimeBox = new TimeBox($('#trimmer-start-time'));
-        this.trimmerEndTimeBox = new TimeBox($('#trimmer-end-time'));
+        this.trimmerStartTimeBox = new TimeBox($('#trimmer-start-time'), true);
+        this.trimmerEndTimeBox = new TimeBox($('#trimmer-end-time'), true);
 
         this.playerSliderValue = parseInt(this.playerSlider.attr("value") || SLIDERS_MIN_VALUE);
         this.isVideoTimeChangedFromOutside = false;
@@ -103,6 +103,7 @@ class VideoPlayer {
 
     onMetadataLoaded() {
         this.cropper.show();
+        this.playerCurrentTimeBox.setMaxTimeValue(this.video.duration * 1000);
         this.playerFullTimeBox.setTimeMillis(this.video.duration * 1000);
         this.trimmerEndTimeBox.setTimeMillis(this.video.duration * 1000);
 

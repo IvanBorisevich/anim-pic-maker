@@ -3,7 +3,7 @@ class TimeBox {
         ['HOURS', { start: 0, end: 2, min: 0, max: 24, step: 1, len: 2 }],
         ['MINUTES', { start: 3, end: 5, min: 0, max: 60, step: 1, len: 2 }],
         ['SECONDS', { start: 6, end: 8, min: 0, max: 60, step: 1, len: 2 }],
-        ['MILLIS', { start: 9, end: 12, min: 0, max: 1000, step: 1, len: 3 }]
+        ['MILLIS', { start: 9, end: 12, min: 0, max: 1000, step: 100, len: 3 }]
     ]);
     static ChangeModes = {
         INCREMENT: 'increment',
@@ -17,6 +17,8 @@ class TimeBox {
         this.millis = 0;
         this.currentSelectionInterval = ['SECONDS', TimeBox.SelectionIntervals.get('SECONDS')];
         this.enteredText = '';
+        this.maxValue = null;
+        this.minValue = 0;
 
         var copyThis = this;
         this.timeBox = element;
@@ -75,6 +77,10 @@ class TimeBox {
         }
     }
 
+    setMaxTimeValue(value) {
+        this.maxValue = value;
+    }
+
     setOnTimeValueChangeCallback(callback, context) {
         this.onTimeValueChangeCallback = callback;
         this.onTimeValueChangeCallbackContext = context;
@@ -90,17 +96,26 @@ class TimeBox {
     }
 
     getTimeMillis() {
-        return this.hours * 60 * 60 * 1000 + this.minutes * 60 * 1000 + this.seconds * 1000 + this.millis;
+        return this.timeToMillis(this.hours, this.minutes, this.seconds, this.millis);
+    }
+
+    timeToMillis(hours, minutes, seconds, millis) {
+        return hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds * 1000 + millis
     }
 
     millisToTime(s) {
-        s = Math.round(s);
-
         function pad(n, z) {
             z = z || 2;
             return ('00' + n).slice(-z);
         }
 
+        this.refreshCurrentValuesByMillis(s);
+
+        return pad(this.hours) + ':' + pad(this.minutes) + ':' + pad(this.seconds) + '.' + pad(this.millis, 3);
+    }
+
+    refreshCurrentValuesByMillis(s) {
+        s = Math.round(s);
         var ms = s % 1000;
         s = (s - ms) / 1000;
         var secs = s % 60;
@@ -112,8 +127,6 @@ class TimeBox {
         this.minutes = mins;
         this.seconds = secs;
         this.millis = ms;
-
-        return pad(hrs) + ':' + pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
     }
 
     onTextBoxClick() {
@@ -222,7 +235,7 @@ class TimeBox {
             var enteredDigit = String.fromCharCode(keyCode);
             this.enteredText += enteredDigit + '';
             if (this.enteredText >= this.currentSelectionInterval[1].max ||
-                this.enteredText.length > 2) {
+                this.enteredText.length > this.currentSelectionInterval[1].len) {
                 e.preventDefault();
             } else {
                 this.refreshCurrentValueByEnteredText();
@@ -251,26 +264,86 @@ class TimeBox {
     refreshAllCurrentValues(changeMode) {
         switch (this.currentSelectionInterval[0]) {
             case 'MILLIS':
-                var changeResult = this.changeValueByIntervalKey(this.millis, 'MILLIS', changeMode);
-                this.millis = changeResult.newValue;
+                var changeResult = this.calcNewValueByIntervalKey(this.millis, 'MILLIS', changeMode);
+                var newTimeMillis = this.timeToMillis(this.hours, this.minutes, this.seconds, changeResult.newValue);
+                if (changeResult.newValue > this.millis &&
+                    changeMode == TimeBox.ChangeModes.DECREMENT &&
+                    this.hours == 0 && this.minutes == 0 && this.seconds == 0) {
+                    this.refreshCurrentValuesByMillis(this.minValue);
+                    break;
+                }
+
+                if (newTimeMillis >= this.minValue && newTimeMillis <= this.maxValue) {
+                    this.millis = changeResult.newValue;
+                } else {
+                    if (newTimeMillis > this.maxValue && changeMode == TimeBox.ChangeModes.INCREMENT) {
+                        this.refreshCurrentValuesByMillis(this.maxValue);
+                    }
+                    break;
+                }
+
                 if (!changeResult.needToChangeLeftValue) {
                     break;
                 }
             case 'SECONDS':
-                var changeResult = this.changeValueByIntervalKey(this.seconds, 'SECONDS', changeMode);
-                this.seconds = changeResult.newValue;
+                var changeResult = this.calcNewValueByIntervalKey(this.seconds, 'SECONDS', changeMode);
+                var newTimeMillis = this.timeToMillis(this.hours, this.minutes, changeResult.newValue, this.millis);
+                if (changeResult.newValue > this.seconds &&
+                    changeMode == TimeBox.ChangeModes.DECREMENT &&
+                    this.hours == 0 && this.minutes == 0) {
+                    this.refreshCurrentValuesByMillis(this.minValue);
+                    break;
+                }
+
+                if (newTimeMillis >= this.minValue && newTimeMillis <= this.maxValue) {
+                    this.seconds = changeResult.newValue;
+                } else {
+                    if (newTimeMillis > this.maxValue && changeMode == TimeBox.ChangeModes.INCREMENT) {
+                        this.refreshCurrentValuesByMillis(this.maxValue);
+                    }
+                    break;
+                }
+
                 if (!changeResult.needToChangeLeftValue) {
                     break;
                 }
             case 'MINUTES':
-                var changeResult = this.changeValueByIntervalKey(this.minutes, 'MINUTES', changeMode);
-                this.minutes = changeResult.newValue;
+                var changeResult = this.calcNewValueByIntervalKey(this.minutes, 'MINUTES', changeMode);
+                var newTimeMillis = this.timeToMillis(this.hours, changeResult.newValue, this.seconds, this.millis);
+                if (changeResult.newValue > this.minutes &&
+                    changeMode == TimeBox.ChangeModes.DECREMENT &&
+                    this.hours == 0) {
+                    this.refreshCurrentValuesByMillis(this.minValue);
+                    break;
+                }
+
+                if (newTimeMillis >= this.minValue && newTimeMillis <= this.maxValue) {
+                    this.minutes = changeResult.newValue;
+                } else {
+                    if (newTimeMillis > this.maxValue && changeMode == TimeBox.ChangeModes.INCREMENT) {
+                        this.refreshCurrentValuesByMillis(this.maxValue);
+                    }
+                    break;
+                }
                 if (!changeResult.needToChangeLeftValue) {
                     break;
                 }
             case 'HOURS':
-                var changeResult = this.changeValueByIntervalKey(this.hours, 'HOURS', changeMode);
-                this.hours = changeResult.newValue;
+                var changeResult = this.calcNewValueByIntervalKey(this.hours, 'HOURS', changeMode);
+                var newTimeMillis = this.timeToMillis(changeResult.newValue, this.minutes, this.seconds, this.millis);
+                if (changeResult.newValue > this.hours &&
+                    changeMode == TimeBox.ChangeModes.DECREMENT) {
+                    this.refreshCurrentValuesByMillis(this.minValue);
+                    break;
+                }
+
+                if (newTimeMillis >= this.minValue && newTimeMillis <= this.maxValue) {
+                    this.hours = changeResult.newValue;
+                } else {
+                    if (newTimeMillis > this.maxValue && changeMode == TimeBox.ChangeModes.INCREMENT) {
+                        this.refreshCurrentValuesByMillis(this.maxValue);
+                    }
+                }
                 break;
             default:
                 break;
@@ -303,7 +376,7 @@ class TimeBox {
             this.leadZeros(this.millis, 3));
     }
 
-    changeValueByIntervalKey(initialValue, intervalKey, changeMode) {
+    calcNewValueByIntervalKey(initialValue, intervalKey, changeMode) {
         var interval = TimeBox.SelectionIntervals.get(intervalKey);
         var delta = interval.step;
         if (changeMode == TimeBox.ChangeModes.DECREMENT) {
