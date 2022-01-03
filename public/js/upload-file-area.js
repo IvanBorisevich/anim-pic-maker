@@ -5,7 +5,7 @@ const fileUploadArea = document.querySelector("#file-upload-area"),
     fileUploadSubmitButton = fileUploadArea.querySelector("#file-upload-submit"),
     videoProcessingTool = document.querySelector("#video-processing-tool");
 
-// videoProcessingTool.hidden = true;
+videoProcessingTool.hidden = true;
 
 let file;
 browseFileButton.onclick = () => {
