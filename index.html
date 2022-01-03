@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="lib/pheasant-buttons-main/dist/css/pheasant-demure-buttons-reset.css" type="text/css" media="all" />
     <link rel="stylesheet" href="lib/pheasant-buttons-main/dist/css/pheasant-demure-buttons-layout.css" type="text/css" media="all" />
     <link rel="stylesheet" href="lib/pheasant-buttons-main/dist/css/pheasant-demure-buttons.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="lib/jquery-checkboxes/skins/all.css?v=1.0.3">
 
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/upload-file-area.css">
@@ -23,8 +24,8 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
     <script src="lib/jquery-asRange/dist/jquery-asRange.min.js"></script>
+    <script src="lib/jquery-checkboxes/icheck.js?v=1.0.3"></script>
     <script src="js/timebox.js"></script>
-
 </head>
 
 <body>
@@ -124,6 +125,16 @@
                 <button id="save-gif-button" type="button" class="pheasant-demure-button outline light hover blink">
                     <p>Save GIF</p>
                 </button>
+            </div>
+            <div class="operation-buttons-container">
+                <div class="animpic-option">
+                    <input id="animpic-loop" type="checkbox">
+                    <label for="animpic-loop">Loop</label>
+                </div>
+                <div class="animpic-option">
+                    <input id="animpic-loop-reversed" type="checkbox">
+                    <label for="animpic-loop-reversed">Loop With Reverse</label>
+                </div>
             </div>
         </div>
 

@@ -15,6 +15,17 @@ class VideoPlayer {
         this.cropperContainer = $("#crop-selector-container");
         this.cropper = $("#resizable");
         this.cropper.hide();
+        this.loopOptionCheckbox = $("#animpic-loop");
+        this.loopOptionCheckbox.iCheck({
+            checkboxClass: 'icheckbox_flat-aero',
+            radioClass: 'icheckbox_flat-aero'
+        });
+        this.loopWithReverseOptionCheckbox = $("#animpic-loop-reversed");
+        this.loopWithReverseOptionCheckbox.iCheck({
+            checkboxClass: 'icheckbox_flat-aero',
+            radioClass: 'iradio_flat-aero'
+        });
+
         this.playerCurrentTimeBox = new TimeBox($('#player-current-time'));
         this.playerCurrentTimeBox.setOnTimeValueChangeCallback(this.setVideoNewTime, this);
 
@@ -248,7 +259,9 @@ class VideoPlayer {
         $.ajax({
             type: "POST",
             url: '/save-just-cropped',
-            data: requestBody,
+            contentType: 'application/json',
+            data: JSON.stringify(requestBody),
+            dataType: 'json',
             success: function() {}
         });
     }
@@ -347,7 +360,9 @@ class VideoTrimmer {
         $.ajax({
             type: "POST",
             url: '/save-just-trimmed',
-            data: requestBody,
+            contentType: 'application/json',
+            data: JSON.stringify(requestBody),
+            dataType: 'json',
             success: function() {}
         });
     }
@@ -362,13 +377,15 @@ class VideoTrimmer {
         requestBody.croppedHeight = Math.round(this.videoPlayer.video.videoHeight * this.videoPlayer.cropperParams.height / this.videoPlayer.cropperContainerParams.height);
         requestBody.framerate = 30;
         requestBody.qualityPercentage = 60;
-        requestBody.isLooped = true;
-        requestBody.concatReversed = true;
+        requestBody.isLooped = this.videoPlayer.loopOptionCheckbox.prop('checked');
+        requestBody.concatReversed = this.videoPlayer.loopWithReverseOptionCheckbox.prop('checked');
 
         $.ajax({
             type: "POST",
             url: '/save-as-webp',
-            data: requestBody,
+            contentType: 'application/json',
+            data: JSON.stringify(requestBody),
+            dataType: 'json',
             success: function() {
                 console.log("Success webp");
             }
@@ -383,7 +400,9 @@ class VideoTrimmer {
         $.ajax({
             type: "POST",
             url: '/save-as-gif',
-            data: requestBody,
+            contentType: 'application/json',
+            data: JSON.stringify(requestBody),
+            dataType: 'json',
             success: function() {}
         });
     }

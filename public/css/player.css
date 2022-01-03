@@ -126,6 +126,10 @@
     justify-content: center;
 }
 
+.animpic-option {
+    padding: 10px;
+}
+
 #player-buttons-container {
     margin-top: 10px;
 }

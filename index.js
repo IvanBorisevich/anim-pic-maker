@@ -44,7 +44,7 @@ function getOutputFilePath(inputFilePath, postfix, outputExt = null) {
     var outputFileName = path.basename(inputFilePath, inputFileExtension) +
         '_' + postfix +
         '_' + Date.now() + outputFileExtension;
-    return CONVERTED_FILES_DIR_PATH + '/' + outputFileName;
+    return path.join(CONVERTED_FILES_DIR_PATH, outputFileName);
 }
 
 function createDirIfNotExists(dirPath) {
@@ -54,7 +54,8 @@ function createDirIfNotExists(dirPath) {
 }
 
 app.post('/upload-video', upload.single('file'), (req, res) => {
-    res.status(200).send('file uploaded');
+    uploadedVideoPath = path.join(__dirname, UPLOADED_FILES_DIR_NAME, req.file.filename).replace(/(\s+)/g, '\\$1');
+    res.status(200).send();
 });
 
 
