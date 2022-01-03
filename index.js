@@ -1,15 +1,14 @@
-var express = require('express');
-var path = require('path');
-var formidable = require('formidable');
+const express = require('express');
+const path = require('path');
 var fs = require('fs');
 var ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 var ffmpeg = require('fluent-ffmpeg');
 ffmpeg.setFfmpegPath(ffmpegPath);
+const multer = require('multer');
 
 const { exec } = require("child_process");
 
-const UPLOADED_FILES_DIR_NAME = 'uploaded_videos';
-const UPLOADED_FILES_DIR_PATH = __dirname + '/' + UPLOADED_FILES_DIR_NAME;
+const UPLOADED_FILES_DIR_NAME = 'uploads';
 const CONVERTED_FILES_DIR_NAME = 'output';
 const CONVERTED_FILES_DIR_PATH = __dirname + '/' + CONVERTED_FILES_DIR_NAME;
 const CONVERTED_FILES_POSTFIX = 'out';
@@ -19,14 +18,22 @@ const CROPPED_VIDEO_POSTFIX = 'cropped';
 const app = express();
 const port = 5000;
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './' + UPLOADED_FILES_DIR_NAME);
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${file.originalname}`);
+    }
+});
+
+const upload = multer({ storage });
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
-app.use(express.urlencoded());
 
-app.get('/', function(req, res) {
-    res.sendFile('index.html', { root: __dirname });
-})
+app.get('/', (req, res) => res.sendFile(path.join(__dirname + '/index.html')));
 
 
 var uploadedVideoPath;
@@ -46,27 +53,8 @@ function createDirIfNotExists(dirPath) {
     }
 }
 
-app.post('/upload-video', function(req, res) {
-    createDirIfNotExists(UPLOADED_FILES_DIR_PATH);
-
-    var form = new formidable.IncomingForm({
-        uploadDir: UPLOADED_FILES_DIR_PATH,
-        keepExtensions: true
-    });
-
-    form.parse(req);
-
-    form.on('file', function(name, file) {
-        var fileOldPath = file.filepath;
-        var fileNewPath = UPLOADED_FILES_DIR_PATH + '/' + file.originalFilename;
-
-        fs.rename(fileOldPath, fileNewPath, function(err) {
-            if (err) throw err;
-            uploadedVideoPath = fileNewPath;
-        });
-
-        res.status(200).send();
-    });
+app.post('/upload-video', upload.single('file'), (req, res) => {
+    res.status(200).send('file uploaded');
 });
 
 

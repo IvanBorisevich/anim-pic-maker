@@ -31,12 +31,15 @@
     <div id="container">
         <h2 align="center" class="main-title">AnimPicMaker - the tool for making animated pictures (WEBP, GIF) from video</h2>
         <br>
-        <div class="drag-area">
+        <div id="file-upload-area" class="drag-area">
             <div class="icon"><i class="fas fa-cloud-upload-alt"></i></div>
             <header id="drag-n-drop-header">Drag & Drop to Upload File</header>
             <span>OR</span>
             <button id="browse-file">Browse File</button>
-            <input id="input-file" type="file" name="file" hidden>
+            <form id="file-upload-form" method="post" action="#" enctype="multipart/form-data">
+                <input name="file" id="input-file" type="file" hidden />
+                <button id="file-upload-submit" type="submit" class="submit-btn" hidden></button>
+            </form>
         </div>
         <div id="video-processing-tool">
             <div id="video-container">

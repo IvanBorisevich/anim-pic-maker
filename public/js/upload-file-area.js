@@ -1,55 +1,59 @@
-const dropArea = document.querySelector(".drag-area"),
-    dragText = dropArea.querySelector("#drag-n-drop-header"),
-    button = dropArea.querySelector("#browse-file"),
-    input = dropArea.querySelector("#input-file"),
+const fileUploadArea = document.querySelector("#file-upload-area"),
+    dragAndDropTitleText = fileUploadArea.querySelector("#drag-n-drop-header"),
+    browseFileButton = fileUploadArea.querySelector("#browse-file"),
+    fileUploadInput = fileUploadArea.querySelector("#input-file"),
+    fileUploadSubmitButton = fileUploadArea.querySelector("#file-upload-submit"),
     videoProcessingTool = document.querySelector("#video-processing-tool");
 
 videoProcessingTool.hidden = true;
 
 let file;
-button.onclick = () => {
-    input.click();
-}
-input.addEventListener("change", function() {
+browseFileButton.onclick = () => {
+    fileUploadInput.click();
+};
+fileUploadInput.addEventListener("change", function() {
     file = this.files[0];
-    dropArea.classList.add("active");
-    showFile();
+    fileUploadArea.classList.add("active");
+    submitFileUpload();
 });
 
-dropArea.addEventListener("dragover", (event) => {
+fileUploadArea.addEventListener("dragover", (event) => {
     event.preventDefault();
-    dropArea.classList.add("active");
-    dragText.textContent = "Release to Upload File";
+    fileUploadArea.classList.add("active");
+    dragAndDropTitleText.textContent = "Release to Upload File";
 });
 
-dropArea.addEventListener("dragleave", () => {
-    dropArea.classList.remove("active");
-    dragText.textContent = "Drag & Drop to Upload File";
+fileUploadArea.addEventListener("dragleave", () => {
+    fileUploadArea.classList.remove("active");
+    dragAndDropTitleText.textContent = "Drag & Drop to Upload File";
 });
 
-dropArea.addEventListener("drop", (event) => {
+fileUploadArea.addEventListener("drop", (event) => {
     event.preventDefault();
     file = event.dataTransfer.files[0];
-    showFile();
+    submitFileUpload();
 });
 
-function showFile() {
-    var data = new FormData();
-    var file = $('#input-file')[0].files[0];
-    data.append('file', file);
+function submitFileUpload() {
+    fileUploadSubmitButton.click();
+    fileUploadArea.style.display = "none";
+    videoProcessingTool.hidden = false;
+};
 
+$("#file-upload-form").submit(function(e) {
+    var fd = new FormData($("#file-upload-form").get(0));
     $.ajax({
         url: '/upload-video',
-        data: data,
-        cache: false,
-        contentType: false,
+        data: fd,
+        type: 'post',
         processData: false,
-        method: 'POST',
-        type: 'POST',
+        contentType: false,
         success: function() {
-            dropArea.style.display = "none";
-            videoProcessingTool.hidden = false;
             videoPlayer.loadVideo(file);
+        },
+        error: function(xhr, status, error) {
+            console.log('Error: ' + error.message);
         }
     });
-}
+    e.preventDefault();
+});
