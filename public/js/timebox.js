@@ -27,6 +27,8 @@ class TimeBox {
         this.btnUp = this.timeBox.find('.timebox-up');
         this.btnDown = this.timeBox.find('.timebox-down');
 
+        this.onlySelectionChange = false;
+
         if (!readonly) {
             this.timeBox.focusout(function() {
                 copyThis.onBtnLeave(copyThis.btnUp);
@@ -42,10 +44,10 @@ class TimeBox {
                     copyThis.currentSelectionInterval[1].start,
                     copyThis.currentSelectionInterval[1].end
                 );
-                copyThis.callOnTimeValueChangeCallback(copyThis.getTimeMillis() / 1000);
-            });
-            this.textBox.focus(function() {
-                copyThis.setInputSelection();
+                if (!copyThis.onlySelectionChange) {
+                    copyThis.callOnTimeValueChangeCallback(copyThis.getTimeMillis() / 1000);
+                }
+                copyThis.onlySelectionChange = false;
             });
             this.textBox.on('keydown paste', function(event) {
                 if (copyThis.textBox.is(":focus")) {
@@ -208,6 +210,7 @@ class TimeBox {
                 default:
                     break;
             }
+            this.onlySelectionChange = true;
             this.setInputSelection();
         }
         if (keyCode == 37) { // arrow LEFT
@@ -229,6 +232,7 @@ class TimeBox {
                 default:
                     break;
             }
+            this.onlySelectionChange = true;
             this.setInputSelection();
         }
         if (keyCode >= 48 && keyCode <= 57) { // digits 0-9

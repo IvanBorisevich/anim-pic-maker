@@ -128,6 +128,8 @@ app.post('/save-as-webp', function(req, res) {
             -vcodec libwebp -preset default -an -vsync 0 -loop ${loopFlag} -qscale ${quality} ${outputFilePath}`;
     }
 
+    console.log("\nExecute the FFMPEG command:\n\n", command, "\n");
+
     exec(command, (error, stdout, stderr) => {
         if (error) {
             console.log(`error: ${error.message}`);

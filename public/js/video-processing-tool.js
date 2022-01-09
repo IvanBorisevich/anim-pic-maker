@@ -184,6 +184,7 @@ class VideoPlayer {
         if (!this.isVideoTimeChangedFromOutside) {
             this.playerSliderValue = this.calcPlayerSliderValueByVideoCurrentTime();
             this.updatePlayerSliderProgressCSS();
+            this.playerCurrentTimeBox.setTimeMillis(this.getVideoCurrentTime() * 1000);
         }
     }
 
@@ -288,6 +289,7 @@ videoPlayer.playPauseButton.click(function() {
 
 videoPlayer.playerSlider.asRange({
     tip: false,
+    keyboard: false,
     onChange: function(newPlayerSliderValue) {
         videoPlayer.onPlayerSliderValueChange(newPlayerSliderValue);
     }
@@ -414,7 +416,7 @@ var videoTrimmer = new VideoTrimmer(videoPlayer);
 videoTrimmer.trimmerSlider.asRange({
     range: true,
     limit: true,
-    keyboard: true,
+    keyboard: false,
     tip: false,
     onChange: function(newTrimmerSliderValues) {
         videoTrimmer.onTrimmerSliderValuesChange(newTrimmerSliderValues);
