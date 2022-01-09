@@ -4,6 +4,7 @@ const SLIDERS_MAX_VALUE = 100;
 class VideoPlayer {
 
     constructor() {
+        var copyThis = this;
 
         this.VideoActions = {
             PLAY: 'Play',
@@ -35,6 +36,50 @@ class VideoPlayer {
 
         this.playerSliderValue = parseInt(this.playerSlider.attr("value") || SLIDERS_MIN_VALUE);
         this.isVideoTimeChangedFromOutside = false;
+
+        this.video.onended = () => {
+            copyThis.onVideoFinish();
+        };
+
+        this.video.ontimeupdate = () => {
+            copyThis.onVideoTimeUpdate();
+        };
+
+        this.video.onloadedmetadata = () => {
+            copyThis.onMetadataLoaded();
+        };
+
+        this.playPauseButton.click(function() {
+            copyThis.onPlayPauseButtonClick();
+        });
+
+        this.playerSlider.asRange({
+            tip: false,
+            keyboard: false,
+            onChange: function(newPlayerSliderValue) {
+                copyThis.onPlayerSliderValueChange(newPlayerSliderValue);
+            }
+        });
+
+        this.cropper.resizable({
+            handles: "n, e, s, w, ne, se, sw, nw",
+            containment: "parent",
+            resize: function(event, resizeParams) {
+                copyThis.onCropperResize(resizeParams);
+            }
+        });
+
+        $(document).on('keydown', function(event) {
+            copyThis.onKeyPressed(event);
+        });
+    }
+
+    onKeyPressed(e) {
+        var keyCode = e.keyCode || e.which;
+        if (keyCode == 32) { // space
+            e.preventDefault();
+            this.playPauseButton.trigger("click");
+        }
     }
 
     isVideoPaused() {
@@ -269,44 +314,9 @@ class VideoPlayer {
 }
 
 
-var videoPlayer = new VideoPlayer();
-
-videoPlayer.video.onended = () => {
-    videoPlayer.onVideoFinish();
-};
-
-videoPlayer.video.ontimeupdate = () => {
-    videoPlayer.onVideoTimeUpdate();
-};
-
-videoPlayer.video.onloadedmetadata = () => {
-    videoPlayer.onMetadataLoaded();
-};
-
-videoPlayer.playPauseButton.click(function() {
-    videoPlayer.onPlayPauseButtonClick();
-});
-
-videoPlayer.playerSlider.asRange({
-    tip: false,
-    keyboard: false,
-    onChange: function(newPlayerSliderValue) {
-        videoPlayer.onPlayerSliderValueChange(newPlayerSliderValue);
-    }
-});
-
-videoPlayer.cropper.resizable({
-    handles: "n, e, s, w, ne, se, sw, nw",
-    containment: "parent",
-    resize: function(event, resizeParams) {
-        videoPlayer.onCropperResize(resizeParams);
-    }
-});
-
-
-
 class VideoTrimmer {
     constructor(videoPlayer) {
+        var copyThis = this;
         this.videoPlayer = videoPlayer;
         this.trimmerSlider = $("#trimmer-slider");
         this.trimLeftButton = $("#trim-left-button");
@@ -317,6 +327,32 @@ class VideoTrimmer {
         this.trimmerSliderIsBeingChangedByMouse = false;
         this.trimmerSliderIsBeingChangedByVideoTimeUpdateEvent = false;
         this.trimmerButtonClicked = false;
+
+        this.trimmerSlider.asRange({
+            range: true,
+            limit: true,
+            keyboard: false,
+            tip: false,
+            onChange: function(newTrimmerSliderValues) {
+                copyThis.onTrimmerSliderValuesChange(newTrimmerSliderValues);
+            }
+        });
+
+        this.trimLeftButton.mousedown(function() {
+            copyThis.onTrimmerLeftButtonClickStart();
+        });
+
+        this.trimLeftButton.mouseup(function() {
+            copyThis.onTrimmerButtonClickFinish();
+        });
+
+        this.trimRightButton.mousedown(function() {
+            copyThis.onTrimmerRightButtonClick();
+        });
+
+        this.trimRightButton.mouseup(function() {
+            copyThis.onTrimmerButtonClickFinish();
+        });
     }
 
     onTrimmerSliderValuesChange(newTrimmerSliderValues) {
@@ -410,34 +446,9 @@ class VideoTrimmer {
     }
 }
 
-
+var videoPlayer = new VideoPlayer();
 var videoTrimmer = new VideoTrimmer(videoPlayer);
 
-videoTrimmer.trimmerSlider.asRange({
-    range: true,
-    limit: true,
-    keyboard: false,
-    tip: false,
-    onChange: function(newTrimmerSliderValues) {
-        videoTrimmer.onTrimmerSliderValuesChange(newTrimmerSliderValues);
-    }
-});
-
-videoTrimmer.trimLeftButton.mousedown(function() {
-    videoTrimmer.onTrimmerLeftButtonClickStart();
-});
-
-videoTrimmer.trimLeftButton.mouseup(function() {
-    videoTrimmer.onTrimmerButtonClickFinish();
-});
-
-videoTrimmer.trimRightButton.mousedown(function() {
-    videoTrimmer.onTrimmerRightButtonClick();
-});
-
-videoTrimmer.trimRightButton.mouseup(function() {
-    videoTrimmer.onTrimmerButtonClickFinish();
-});
 
 
 $("#save-cropped-button").click(function() {
