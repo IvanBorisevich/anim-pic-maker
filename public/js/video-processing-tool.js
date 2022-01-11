@@ -287,29 +287,16 @@ class VideoPlayer {
         return this.video.currentTime;
     }
 
+    getVideoDuration() {
+        return this.video.duration;
+    }
+
     calcVideoCurrentTimeByPlayerSliderValue(playerSliderValue) {
         return this.video.duration * playerSliderValue / 100;
     }
 
     calcPlayerSliderValueByVideoCurrentTime() {
         return this.video.currentTime / this.video.duration * 100;
-    }
-
-    saveJustCropped() {
-        var requestBody = {};
-        requestBody.croppedX = Math.round(this.video.videoWidth * this.cropperParams.margin.left / this.cropperContainerParams.width);
-        requestBody.croppedY = Math.round(this.video.videoHeight * this.cropperParams.margin.top / this.cropperContainerParams.height);
-        requestBody.croppedWidth = Math.round(this.video.videoWidth * this.cropperParams.width / this.cropperContainerParams.width);
-        requestBody.croppedHeight = Math.round(this.video.videoHeight * this.cropperParams.height / this.cropperContainerParams.height);
-
-        $.ajax({
-            type: "POST",
-            url: '/save-just-cropped',
-            contentType: 'application/json',
-            data: JSON.stringify(requestBody),
-            dataType: 'json',
-            success: function() {}
-        });
     }
 }
 
@@ -321,6 +308,7 @@ class VideoTrimmer {
         this.trimmerSlider = $("#trimmer-slider");
         this.trimLeftButton = $("#trim-left-button");
         this.trimRightButton = $("#trim-right-button");
+        this.trimResetButton = $("#trim-reset-button");
         this.trimmerSliderValues = (this.trimmerSlider.attr("value") || (SLIDERS_MIN_VALUE + ',' + SLIDERS_MAX_VALUE))
             .split(',', 2)
             .map(x => +x);
@@ -351,6 +339,14 @@ class VideoTrimmer {
         });
 
         this.trimRightButton.mouseup(function() {
+            copyThis.onTrimmerButtonClickFinish();
+        });
+
+        this.trimResetButton.mousedown(function() {
+            copyThis.onTrimmerResetButtonClick();
+        });
+
+        this.trimResetButton.mouseup(function() {
             copyThis.onTrimmerButtonClickFinish();
         });
     }
@@ -386,18 +382,27 @@ class VideoTrimmer {
         this.videoPlayer.trimmerEndTimeBox.setTimeMillis(this.videoPlayer.getVideoCurrentTime() * 1000);
     }
 
+    onTrimmerResetButtonClick() {
+        this.trimmerButtonClicked = true;
+        this.trimmerSliderValues[0] = SLIDERS_MIN_VALUE;
+        this.trimmerSliderValues[1] = SLIDERS_MAX_VALUE;
+        this.trimmerSlider.asRange('set', this.trimmerSliderValues);
+        this.videoPlayer.trimmerStartTimeBox.setTimeMillis(0);
+        this.videoPlayer.trimmerEndTimeBox.setTimeMillis(this.videoPlayer.getVideoDuration() * 1000);
+    }
+
     onTrimmerButtonClickFinish() {
         this.trimmerButtonClicked = false;
     }
 
-    saveJustTrimmed() {
+    saveProcessedAsMp4() {
         var requestBody = {};
         requestBody.trimStartTime = this.videoPlayer.calcVideoCurrentTimeByPlayerSliderValue(this.trimmerSliderValues[0]);
         requestBody.trimEndTime = this.videoPlayer.calcVideoCurrentTimeByPlayerSliderValue(this.trimmerSliderValues[1]);
 
         $.ajax({
             type: "POST",
-            url: '/save-just-trimmed',
+            url: '/save-as-mp4',
             contentType: 'application/json',
             data: JSON.stringify(requestBody),
             dataType: 'json',
@@ -419,15 +424,18 @@ class VideoTrimmer {
         requestBody.concatReversed = this.videoPlayer.loopWithReverseOptionCheckbox.prop('checked');
 
         $.ajax({
-            type: "POST",
-            url: '/save-as-webp',
-            contentType: 'application/json',
-            data: JSON.stringify(requestBody),
-            dataType: 'json',
-            success: function() {
-                console.log("Success webp");
-            }
-        });
+                type: "POST",
+                url: '/save-as-webp',
+                contentType: 'application/json',
+                data: JSON.stringify(requestBody),
+                dataType: 'json'
+            })
+            .done(function(data) {
+                console.log("Success webp", data);
+                // if (data.outputFilePath) {
+                //     window.open(data.outputFilePath, "_blank");
+                // }
+            });
     }
 
     saveProcessedAsGif() {
@@ -450,13 +458,8 @@ var videoPlayer = new VideoPlayer();
 var videoTrimmer = new VideoTrimmer(videoPlayer);
 
 
-
-$("#save-cropped-button").click(function() {
-    videoPlayer.saveJustCropped();
-});
-
-$("#save-trimmed-button").click(function() {
-    videoTrimmer.saveJustTrimmed();
+$("#save-mp4-button").click(function() {
+    videoTrimmer.saveProcessedAsMp4();
 });
 
 $("#save-webp-button").click(function() {

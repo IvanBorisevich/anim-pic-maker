@@ -4,3 +4,4 @@ public/lib/
 uploads/*
 !uploads/.gitkeep
 output/
+todo.txt

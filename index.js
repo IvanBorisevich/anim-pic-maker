@@ -59,7 +59,7 @@ app.post('/upload-video', upload.single('file'), (req, res) => {
 });
 
 
-app.post('/save-just-trimmed', function(req, res) {
+app.post('/save-as-mp4', function(req, res) {
     createDirIfNotExists(CONVERTED_FILES_DIR_PATH);
     var outputFilePath = getOutputFilePath(uploadedVideoPath, TRIMMED_VIDEO_POSTFIX);
 
@@ -77,24 +77,16 @@ app.post('/save-just-trimmed', function(req, res) {
             console.log('error: ', err)
         }).run();
 
-    res.status(200).send();
-});
-
-
-app.post('/save-just-cropped', function(req, res) {
-    createDirIfNotExists(CONVERTED_FILES_DIR_PATH);
-    var outputFilePath = getOutputFilePath(uploadedVideoPath, CROPPED_VIDEO_POSTFIX);
-
-    ffmpeg(uploadedVideoPath)
-        .videoFilters(`crop=${req.body.croppedWidth}:${req.body.croppedHeight}:${req.body.croppedX}:${req.body.croppedY}`)
-        .on('end', function(err) {
-            if (!err) { console.log('Cropped successfully!') }
-        })
-        .on('error', function(err) {
-            if (!err) { console.log('Cropping error') }
-        })
-        .output(outputFilePath)
-        .run();
+    // ffmpeg(uploadedVideoPath)
+    // .videoFilters(`crop=${req.body.croppedWidth}:${req.body.croppedHeight}:${req.body.croppedX}:${req.body.croppedY}`)
+    // .on('end', function(err) {
+    //     if (!err) { console.log('Cropped successfully!') }
+    // })
+    // .on('error', function(err) {
+    //     if (!err) { console.log('Cropping error') }
+    // })
+    // .output(outputFilePath)
+    // .run();
 
     res.status(200).send();
 });
@@ -119,12 +111,12 @@ app.post('/save-as-webp', function(req, res) {
     if (concatReversed) {
         command =
             `ffmpeg -ss ${trimA} -to ${trimB} -i ${uploadedVideoPath} \\
-            -filter_complex "reverse,fifo[r];[0:v][r] concat=n=2:v=1,crop=${cropW}:${cropH}:${cropX}:${cropY},fps=${framerate}[v]" -map "[v]" \\
+            -filter_complex "reverse,fifo[r];[0:v][r] concat=n=2:v=1,crop=${cropW}:${cropH}:${cropX}:${cropY},fps=${framerate},setpts=0.25*PTS[v]" -map "[v]" \\
             -vcodec libwebp -preset default -an -vsync 0 -loop ${loopFlag} -qscale ${quality} ${outputFilePath}`;
     } else {
         command =
             `ffmpeg -ss ${trimA} -to ${trimB} -i ${uploadedVideoPath} \\
-            -vf "crop=${cropW}:${cropH}:${cropX}:${cropY},fps=${framerate}" \\
+            -vf "crop=${cropW}:${cropH}:${cropX}:${cropY},fps=${framerate},setpts=0.25*PTS" \\
             -vcodec libwebp -preset default -an -vsync 0 -loop ${loopFlag} -qscale ${quality} ${outputFilePath}`;
     }
 
@@ -132,17 +124,17 @@ app.post('/save-as-webp', function(req, res) {
 
     exec(command, (error, stdout, stderr) => {
         if (error) {
-            console.log(`error: ${error.message}`);
+            console.log(`Error: ${error.message}`);
+            res.json({ outputFilePath: outputFilePath }).end();
             return;
         }
         if (stderr) {
-            console.log(`stderr: ${stderr}`);
+            console.log(`Stderr: ${stderr}`);
+            res.json({ outputFilePath: outputFilePath }).end();
             return;
         }
-        console.log(`Success! Stdout: ${stdout}`);
+        res.json({ outputFilePath: outputFilePath }).end();
     });
-
-    res.status(200).send();
 });
 
 

@@ -2,6 +2,9 @@
 
 <head>
     <title>AnimPicMaker</title>
+
+    <link rel="icon" href="icons/favicon.ico">
+
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -64,8 +67,8 @@
                                 <div class="timebox-button timebox-down disable-select"><a>&#9660;</a></div>
                             </div>
                         </div>
-                        <div style="margin-left: 85px;">
-                            <button id="play-pause-button" type="button" class="pheasant-demure-button outline light hover blink">
+                        <div style="margin-left: 79px; width: 106px;">
+                            <button id="play-pause-button" type="button" class="pheasant-demure-button outline light hover blink" style="width: 100%">
                                 <span class="label">Play</span>
                             </button>
                         </div>
@@ -92,14 +95,14 @@
                                 <div class="timebox-button timebox-down disable-select"><a>&#9660;</a></div>
                             </div>
                         </div>
-                        <div style="margin-left: 65px;">
+                        <!-- <div style="margin-left: 65px;">
                             <button id="trim-left-button" type="button" class="pheasant-demure-button outline light hover blink">
                                 <span class="label">[</span>
                             </button>
                             <button id="trim-right-button" type="button" class="pheasant-demure-button outline light hover blink">
                                 <span class="label">]</span>
                             </button>
-                        </div>
+                        </div> -->
                         <div id="trimmer-end-time" class="timebox">
                             <div class="timebox-text-container">
                                 <input type="text">
@@ -113,14 +116,20 @@
                 </div>
             </div>
             <div class="operation-buttons-container">
-                <button id="save-cropped-button" type="button" class="pheasant-demure-button outline light hover blink">
-                    <p>Save Cropped Fragment</p>
+                <button id="trim-left-button" type="button" class="pheasant-demure-button outline light hover blink">
+                    <span class="label">[</span>
                 </button>
-                <button id="save-trimmed-button" type="button" class="pheasant-demure-button outline light hover blink">
-                    <p>Save Trimmed Fragment</p>
+                <button id="trim-right-button" type="button" class="pheasant-demure-button outline light hover blink">
+                    <span class="label">]</span>
+                </button>
+                <button id="trim-reset-button" type="button" class="pheasant-demure-button outline light hover blink">
+                    <span class="label">[&lt;-&gt;]</span>
                 </button>
             </div>
             <div class="operation-buttons-container">
+                <button id="save-mp4-button" type="button" class="pheasant-demure-button outline light hover blink">
+                    <p>Save MP4</p>
+                </button>
                 <button id="save-webp-button" type="button" class="pheasant-demure-button outline light hover blink">
                     <p>Save WEBP</p>
                 </button>
@@ -135,7 +144,7 @@
                 </div>
                 <div class="animpic-option">
                     <input id="animpic-loop-reversed" type="checkbox">
-                    <label for="animpic-loop-reversed">Loop With Reverse</label>
+                    <label for="animpic-loop-reversed">With Reverse</label>
                 </div>
             </div>
         </div>
