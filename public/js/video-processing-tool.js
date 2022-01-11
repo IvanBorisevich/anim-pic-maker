@@ -309,6 +309,8 @@ class VideoTrimmer {
         this.trimLeftButton = $("#trim-left-button");
         this.trimRightButton = $("#trim-right-button");
         this.trimResetButton = $("#trim-reset-button");
+        this.trimLeftResetButton = $("#trim-left-reset-button");
+        this.trimRightResetButton = $("#trim-right-reset-button");
         this.trimmerSliderValues = (this.trimmerSlider.attr("value") || (SLIDERS_MIN_VALUE + ',' + SLIDERS_MAX_VALUE))
             .split(',', 2)
             .map(x => +x);
@@ -347,6 +349,22 @@ class VideoTrimmer {
         });
 
         this.trimResetButton.mouseup(function() {
+            copyThis.onTrimmerButtonClickFinish();
+        });
+
+        this.trimLeftResetButton.mousedown(function() {
+            copyThis.onTrimmerLeftResetButtonClick();
+        });
+
+        this.trimLeftResetButton.mouseup(function() {
+            copyThis.onTrimmerButtonClickFinish();
+        });
+
+        this.trimRightResetButton.mousedown(function() {
+            copyThis.onTrimmerRightResetButtonClick();
+        });
+
+        this.trimRightResetButton.mouseup(function() {
             copyThis.onTrimmerButtonClickFinish();
         });
     }
@@ -388,6 +406,20 @@ class VideoTrimmer {
         this.trimmerSliderValues[1] = SLIDERS_MAX_VALUE;
         this.trimmerSlider.asRange('set', this.trimmerSliderValues);
         this.videoPlayer.trimmerStartTimeBox.setTimeMillis(0);
+        this.videoPlayer.trimmerEndTimeBox.setTimeMillis(this.videoPlayer.getVideoDuration() * 1000);
+    }
+
+    onTrimmerLeftResetButtonClick() {
+        this.trimmerButtonClicked = true;
+        this.trimmerSliderValues[0] = SLIDERS_MIN_VALUE;
+        this.trimmerSlider.asRange('set', this.trimmerSliderValues);
+        this.videoPlayer.trimmerStartTimeBox.setTimeMillis(0);
+    }
+
+    onTrimmerRightResetButtonClick() {
+        this.trimmerButtonClicked = true;
+        this.trimmerSliderValues[1] = SLIDERS_MAX_VALUE;
+        this.trimmerSlider.asRange('set', this.trimmerSliderValues);
         this.videoPlayer.trimmerEndTimeBox.setTimeMillis(this.videoPlayer.getVideoDuration() * 1000);
     }
 
