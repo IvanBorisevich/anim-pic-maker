@@ -31,8 +31,8 @@ class VideoPlayer {
         this.playerCurrentTimeBox.setOnTimeValueChangeCallback(this.setVideoNewTime, this);
 
         this.playerFullTimeBox = new TimeBox($('#player-full-time'), true);
-        this.trimmerStartTimeBox = new TimeBox($('#trimmer-start-time'), true);
-        this.trimmerEndTimeBox = new TimeBox($('#trimmer-end-time'), true);
+        this.trimmerStartTimeBox = new TimeBox($('#trimmer-start-time'));
+        this.trimmerEndTimeBox = new TimeBox($('#trimmer-end-time'));
 
         this.playerSliderValue = parseInt(this.playerSlider.attr("value") || SLIDERS_MIN_VALUE);
         this.isVideoTimeChangedFromOutside = false;
@@ -134,6 +134,7 @@ class VideoPlayer {
         }
         this.setVideoCurrentTime(timeInSeconds);
         this.setPlayerSliderValue(this.calcPlayerSliderValueByVideoCurrentTime(timeInSeconds));
+        this.updatePlayerSliderProgressCSS();
     }
 
     loadVideo(file) {
@@ -160,6 +161,8 @@ class VideoPlayer {
     onMetadataLoaded() {
         this.cropper.show();
         this.playerCurrentTimeBox.setMaxTimeValue(this.video.duration * 1000);
+        this.trimmerStartTimeBox.setMaxTimeValue(this.video.duration * 1000);
+        this.trimmerEndTimeBox.setMaxTimeValue(this.video.duration * 1000);
         this.playerFullTimeBox.setTimeMillis(this.video.duration * 1000);
         this.trimmerEndTimeBox.setTimeMillis(this.video.duration * 1000);
 
@@ -328,6 +331,9 @@ class VideoTrimmer {
             }
         });
 
+        this.videoPlayer.trimmerStartTimeBox.setOnTimeValueChangeCallback(this.setTrimmerStartTime, this);
+        this.videoPlayer.trimmerEndTimeBox.setOnTimeValueChangeCallback(this.setTrimmerEndTime, this);
+
         this.trimLeftButton.mousedown(function() {
             copyThis.onTrimmerLeftButtonClickStart();
         });
@@ -426,6 +432,26 @@ class VideoTrimmer {
     onTrimmerButtonClickFinish() {
         this.trimmerButtonClicked = false;
     }
+
+    setTrimmerStartTime(timeInSeconds) {
+        this.trimmerButtonClicked = true;
+        this.videoPlayer.setVideoNewTime(timeInSeconds);
+        this.videoPlayer.playerCurrentTimeBox.setTimeMillis(timeInSeconds * 1000);
+        this.trimmerSliderValues[0] = this.videoPlayer.getPlayerSliderValue();
+        this.trimmerSlider.asRange('set', this.trimmerSliderValues);
+        this.trimmerButtonClicked = false;
+    }
+
+    setTrimmerEndTime(timeInSeconds) {
+        this.trimmerButtonClicked = true;
+        this.videoPlayer.setVideoNewTime(timeInSeconds);
+        this.videoPlayer.playerCurrentTimeBox.setTimeMillis(timeInSeconds * 1000);
+        this.trimmerSliderValues[1] = this.videoPlayer.getPlayerSliderValue();
+        this.trimmerSlider.asRange('set', this.trimmerSliderValues);
+        this.trimmerButtonClicked = false;
+    }
+
+
 
     saveProcessedAsMp4() {
         var requestBody = {};
