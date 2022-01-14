@@ -36,6 +36,7 @@ class VideoPlayer {
 
         this.playerSliderValue = parseInt(this.playerSlider.attr("value") || SLIDERS_MIN_VALUE);
         this.isVideoTimeChangedFromOutside = false;
+        this.trimmedFragmentIsPlayed = false;
 
         this.video.onended = () => {
             copyThis.onVideoFinish();
@@ -119,7 +120,7 @@ class VideoPlayer {
             this.setPlayPauseButtonText(this.VideoActions.PLAY);
         }
 
-        var videoCurrentTime = this.calcVideoCurrentTimeByPlayerSliderValue(this.playerSliderValue);
+        var videoCurrentTime = this.calcVideoCurrentTimeInSecByPlayerSliderValue(this.playerSliderValue);
         this.playerCurrentTimeBox.setTimeMillis(videoCurrentTime * 1000);
         this.setVideoCurrentTime(videoCurrentTime);
     }
@@ -165,6 +166,9 @@ class VideoPlayer {
         this.trimmerEndTimeBox.setMaxTimeValue(this.video.duration * 1000);
         this.playerFullTimeBox.setTimeMillis(this.video.duration * 1000);
         this.trimmerEndTimeBox.setTimeMillis(this.video.duration * 1000);
+
+        this.trimStartTimeMillis = 0;
+        this.trimEndTimeMillis = this.video.duration * 1000;
 
         var videoWidth = this.video.videoWidth;
         var videoHeight = this.video.videoHeight;
@@ -228,18 +232,36 @@ class VideoPlayer {
         this.movePlayerSlider(newPlayerSliderValue, pauseVideo);
     }
 
-    onVideoTimeUpdate() {
-        if (!this.isVideoTimeChangedFromOutside) {
-            this.playerSliderValue = this.calcPlayerSliderValueByVideoCurrentTime();
-            this.updatePlayerSliderProgressCSS();
-            this.playerCurrentTimeBox.setTimeMillis(this.getVideoCurrentTime() * 1000);
+    playVideoInInterval(startTimeMillis, endTimeMillis) {
+        this.trimmedFragmentIsPlayed = true;
+        this.trimStartTimeMillis = startTimeMillis;
+        this.trimEndTimeMillis = endTimeMillis;
+        this.isVideoTimeChangedFromOutside = false;
+        this.video.currentTime = startTimeMillis / 1000;
+        if (this.isVideoPaused()) {
+            this.video.play();
         }
     }
 
-    onVideoFinish() {
+    onVideoTimeUpdate() {
+        if (!this.isVideoTimeChangedFromOutside) {
+            console.log(this.video.currentTime * 1000);
+            this.playerSliderValue = this.calcPlayerSliderValueByVideoCurrentTime();
+            this.updatePlayerSliderProgressCSS();
+            this.playerCurrentTimeBox.setTimeMillis(this.getVideoCurrentTime() * 1000);
+
+            if (this.trimmedFragmentIsPlayed && this.video.currentTime * 1000 >= this.trimEndTimeMillis) {
+                this.video.pause();
+                this.onVideoFinish(this.trimStartTimeMillis / 1000);
+                this.trimmedFragmentIsPlayed = false;
+            }
+        }
+    }
+
+    onVideoFinish(startTimeSec = 0) {
         this.setPlayPauseButtonText(this.VideoActions.PLAY);
-        this.video.currentTime = 0;
-        this.playerSliderValue = 0;
+        this.video.currentTime = startTimeSec;
+        this.playerSliderValue = this.calcPlayerSliderValueByVideoCurrentTime();
         this.updatePlayerSliderProgressCSS();
     }
 
@@ -294,7 +316,7 @@ class VideoPlayer {
         return this.video.duration;
     }
 
-    calcVideoCurrentTimeByPlayerSliderValue(playerSliderValue) {
+    calcVideoCurrentTimeInSecByPlayerSliderValue(playerSliderValue) {
         return this.video.duration * playerSliderValue / 100;
     }
 
@@ -314,6 +336,7 @@ class VideoTrimmer {
         this.trimResetButton = $("#trim-reset-button");
         this.trimLeftResetButton = $("#trim-left-reset-button");
         this.trimRightResetButton = $("#trim-right-reset-button");
+        this.playTrimmedFragmentButton = $("#play-trimmed-fragment-button");
         this.trimmerSliderValues = (this.trimmerSlider.attr("value") || (SLIDERS_MIN_VALUE + ',' + SLIDERS_MAX_VALUE))
             .split(',', 2)
             .map(x => +x);
@@ -372,6 +395,12 @@ class VideoTrimmer {
 
         this.trimRightResetButton.mouseup(function() {
             copyThis.onTrimmerButtonClickFinish();
+        });
+
+        this.playTrimmedFragmentButton.click(function() {
+            var startTimeMillis = copyThis.videoPlayer.calcVideoCurrentTimeInSecByPlayerSliderValue(copyThis.trimmerSliderValues[0]) * 1000;
+            var endTimeMillis = copyThis.videoPlayer.calcVideoCurrentTimeInSecByPlayerSliderValue(copyThis.trimmerSliderValues[1]) * 1000;
+            copyThis.videoPlayer.playVideoInInterval(startTimeMillis, endTimeMillis);
         });
     }
 
@@ -455,8 +484,8 @@ class VideoTrimmer {
 
     saveProcessedAsMp4() {
         var requestBody = {};
-        requestBody.trimStartTime = this.videoPlayer.calcVideoCurrentTimeByPlayerSliderValue(this.trimmerSliderValues[0]);
-        requestBody.trimEndTime = this.videoPlayer.calcVideoCurrentTimeByPlayerSliderValue(this.trimmerSliderValues[1]);
+        requestBody.trimStartTime = this.videoPlayer.calcVideoCurrentTimeInSecByPlayerSliderValue(this.trimmerSliderValues[0]);
+        requestBody.trimEndTime = this.videoPlayer.calcVideoCurrentTimeInSecByPlayerSliderValue(this.trimmerSliderValues[1]);
 
         $.ajax({
             type: "POST",
@@ -470,8 +499,8 @@ class VideoTrimmer {
 
     saveProcessedAsWebp() {
         var requestBody = {};
-        requestBody.trimStartTime = this.videoPlayer.calcVideoCurrentTimeByPlayerSliderValue(this.trimmerSliderValues[0]);
-        requestBody.trimEndTime = this.videoPlayer.calcVideoCurrentTimeByPlayerSliderValue(this.trimmerSliderValues[1]);
+        requestBody.trimStartTime = this.videoPlayer.calcVideoCurrentTimeInSecByPlayerSliderValue(this.trimmerSliderValues[0]);
+        requestBody.trimEndTime = this.videoPlayer.calcVideoCurrentTimeInSecByPlayerSliderValue(this.trimmerSliderValues[1]);
         requestBody.croppedX = Math.round(this.videoPlayer.video.videoWidth * this.videoPlayer.cropperParams.margin.left / this.videoPlayer.cropperContainerParams.width);
         requestBody.croppedY = Math.round(this.videoPlayer.video.videoHeight * this.videoPlayer.cropperParams.margin.top / this.videoPlayer.cropperContainerParams.height);
         requestBody.croppedWidth = Math.round(this.videoPlayer.video.videoWidth * this.videoPlayer.cropperParams.width / this.videoPlayer.cropperContainerParams.width);
