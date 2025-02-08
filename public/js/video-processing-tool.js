@@ -493,7 +493,13 @@ class VideoTrimmer {
             contentType: 'application/json',
             data: JSON.stringify(requestBody),
             dataType: 'json',
-            success: function() {}
+            success: function(data) {
+                console.log("Success mp4", data);
+                alert("Success");
+                // if (data.outputFilePath) {
+                //     window.open(data.outputFilePath, "_blank");
+                // }
+            }
         });
     }
 
@@ -519,6 +525,7 @@ class VideoTrimmer {
             })
             .done(function(data) {
                 console.log("Success webp", data);
+                alert("Success");
                 // if (data.outputFilePath) {
                 //     window.open(data.outputFilePath, "_blank");
                 // }
@@ -526,9 +533,17 @@ class VideoTrimmer {
     }
 
     saveProcessedAsGif() {
-        var requestBody = {
-
-        };
+        var requestBody = {};
+        requestBody.trimStartTime = this.videoPlayer.calcVideoCurrentTimeInSecByPlayerSliderValue(this.trimmerSliderValues[0]);
+        requestBody.trimEndTime = this.videoPlayer.calcVideoCurrentTimeInSecByPlayerSliderValue(this.trimmerSliderValues[1]);
+        requestBody.croppedX = Math.round(this.videoPlayer.video.videoWidth * this.videoPlayer.cropperParams.margin.left / this.videoPlayer.cropperContainerParams.width);
+        requestBody.croppedY = Math.round(this.videoPlayer.video.videoHeight * this.videoPlayer.cropperParams.margin.top / this.videoPlayer.cropperContainerParams.height);
+        requestBody.croppedWidth = Math.round(this.videoPlayer.video.videoWidth * this.videoPlayer.cropperParams.width / this.videoPlayer.cropperContainerParams.width);
+        requestBody.croppedHeight = Math.round(this.videoPlayer.video.videoHeight * this.videoPlayer.cropperParams.height / this.videoPlayer.cropperContainerParams.height);
+        requestBody.framerate = 30;
+        requestBody.qualityPercentage = 60;
+        requestBody.isLooped = this.videoPlayer.loopOptionCheckbox.prop('checked');
+        requestBody.concatReversed = this.videoPlayer.loopWithReverseOptionCheckbox.prop('checked');
 
         $.ajax({
             type: "POST",
@@ -536,7 +551,13 @@ class VideoTrimmer {
             contentType: 'application/json',
             data: JSON.stringify(requestBody),
             dataType: 'json',
-            success: function() {}
+            success: function(data) {
+                console.log("Success gif", data);
+                alert("Success");
+                // if (data.outputFilePath) {
+                //     window.open(data.outputFilePath, "_blank");
+                // }
+            }
         });
     }
 }

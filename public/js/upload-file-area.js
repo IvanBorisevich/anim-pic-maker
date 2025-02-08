@@ -5,7 +5,7 @@ const fileUploadArea = document.querySelector("#file-upload-area"),
     fileUploadSubmitButton = fileUploadArea.querySelector("#file-upload-submit"),
     videoProcessingTool = document.querySelector("#video-processing-tool");
 
-// videoProcessingTool.hidden = true;
+videoProcessingTool.hidden = true;
 
 let file;
 browseFileButton.onclick = () => {
@@ -37,7 +37,6 @@ fileUploadArea.addEventListener("drop", (event) => {
 function submitFileUpload() {
     fileUploadSubmitButton.click();
     fileUploadArea.style.display = "none";
-    videoProcessingTool.hidden = false;
 };
 
 $("#file-upload-form").submit(function(e) {
@@ -51,6 +50,8 @@ $("#file-upload-form").submit(function(e) {
         success: function() {
             var file = $('#input-file')[0].files[0];
             videoPlayer.loadVideo(file);
+            console.log('File has been successfully uploaded!');
+            videoProcessingTool.hidden = false;
         },
         error: function(xhr, status, error) {
             console.log('Error: ' + error.message);

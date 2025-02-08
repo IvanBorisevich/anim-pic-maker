@@ -1,6 +1,5 @@
 .vscode/
 node_modules/
-public/lib/
 uploads/*
 !uploads/.gitkeep
 output/

@@ -1,9 +1,9 @@
 const express = require('express');
 const path = require('path');
 var fs = require('fs');
-var ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
-var ffmpeg = require('fluent-ffmpeg');
-ffmpeg.setFfmpegPath(ffmpegPath);
+// var ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+var ffmpeg = require('ffmpeg');
+// ffmpeg.setFfmpegPath(ffmpegPath);
 const multer = require('multer');
 
 const { exec } = require("child_process");
@@ -35,7 +35,6 @@ app.use(express.json());
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname + '/index.html')));
 
-
 var uploadedVideoPath;
 
 function getOutputFilePath(inputFilePath, postfix, outputExt = null) {
@@ -54,7 +53,11 @@ function createDirIfNotExists(dirPath) {
 }
 
 app.post('/upload-video', upload.single('file'), (req, res) => {
-    uploadedVideoPath = path.join(__dirname, UPLOADED_FILES_DIR_NAME, req.file.filename).replace(/(\s+)/g, '\\$1');
+    if (process.platform === "linux") {
+        uploadedVideoPath = path.join(__dirname, UPLOADED_FILES_DIR_NAME, req.file.filename).replace(/(\s+)/g, '\\$1');
+    } else if (process.platform === "win32") {
+        uploadedVideoPath = path.join(__dirname, UPLOADED_FILES_DIR_NAME, req.file.filename);
+    }
     res.status(200).send();
 });
 
@@ -108,16 +111,30 @@ app.post('/save-as-webp', function(req, res) {
     var concatReversed = req.body.concatReversed;
 
     var command;
-    if (concatReversed) {
-        command =
-            `ffmpeg -ss ${trimA} -to ${trimB} -i ${uploadedVideoPath} \\
-            -filter_complex "reverse,fifo[r];[0:v][r] concat=n=2:v=1,crop=${cropW}:${cropH}:${cropX}:${cropY},fps=${framerate},setpts=0.25*PTS[v]" -map "[v]" \\
-            -vcodec libwebp -preset default -an -vsync 0 -loop ${loopFlag} -qscale ${quality} ${outputFilePath}`;
+
+    if (process.platform === "linux") {
+        if (concatReversed) {
+            command =
+                `ffmpeg -ss ${trimA} -to ${trimB} -i ${uploadedVideoPath} \\
+                -filter_complex "reverse,fifo[r];[0:v][r] concat=n=2:v=1,crop=${cropW}:${cropH}:${cropX}:${cropY},fps=${framerate},setpts=0.25*PTS[v]" -map "[v]" \\
+                -vcodec libwebp -preset default -an -vsync 0 -loop ${loopFlag} -qscale ${quality} ${outputFilePath}`;
+        } else {
+            command =
+                `ffmpeg -ss ${trimA} -to ${trimB} -i ${uploadedVideoPath} \\
+                -vf "crop=${cropW}:${cropH}:${cropX}:${cropY},fps=${framerate},setpts=0.25*PTS" \\
+                -vcodec libwebp -preset default -an -vsync 0 -loop ${loopFlag} -qscale ${quality} ${outputFilePath}`;
+        }
+    } else if (process.platform === "win32") {
+        if (concatReversed) {
+            command =
+                `ffmpeg.exe -ss ${trimA} -to ${trimB} -i "${uploadedVideoPath}" -filter_complex "reverse,fifo[r];[0:v][r] concat=n=2:v=1,crop=${cropW}:${cropH}:${cropX}:${cropY},fps=${framerate},setpts=0.25*PTS[v]" -map "[v]" -vcodec libwebp -preset default -an -vsync 0 -loop ${loopFlag} -qscale ${quality} "${outputFilePath}"`;
+        } else {
+            command =
+                `ffmpeg.exe -ss ${trimA} -to ${trimB} -i "${uploadedVideoPath}" -vf "crop=${cropW}:${cropH}:${cropX}:${cropY},fps=${framerate},setpts=0.25*PTS" -vcodec libwebp -preset default -an -vsync 0 -loop ${loopFlag} -qscale ${quality} "${outputFilePath}"`;
+        }
     } else {
-        command =
-            `ffmpeg -ss ${trimA} -to ${trimB} -i ${uploadedVideoPath} \\
-            -vf "crop=${cropW}:${cropH}:${cropX}:${cropY},fps=${framerate},setpts=0.25*PTS" \\
-            -vcodec libwebp -preset default -an -vsync 0 -loop ${loopFlag} -qscale ${quality} ${outputFilePath}`;
+        console.log("Cannot build a command with ffmpeg due to unrecognized OS");
+        alert("Cannot build a command with ffmpeg due to unrecognized OS");
     }
 
     console.log("\nExecute the FFMPEG command:\n\n", command, "\n");
@@ -140,7 +157,61 @@ app.post('/save-as-webp', function(req, res) {
 
 app.post('/save-as-gif', function(req, res) {
     createDirIfNotExists(CONVERTED_FILES_DIR_PATH);
-    res.status(200).send();
+    var outputFilePath = getOutputFilePath(uploadedVideoPath, CONVERTED_FILES_POSTFIX, 'gif');
+
+    var loopFlag = req.body.isLooped ? 0 : 1;
+    var cropX = req.body.croppedX;
+    var cropY = req.body.croppedY;
+    var cropW = req.body.croppedWidth;
+    var cropH = req.body.croppedHeight;
+    var trimA = req.body.trimStartTime;
+    var trimB = req.body.trimEndTime;
+    var framerate = req.body.framerate;
+    var quality = req.body.qualityPercentage;
+    var concatReversed = req.body.concatReversed;
+
+    var command;
+
+    if (process.platform === "linux") {
+        if (concatReversed) {
+            command =
+                `ffmpeg -ss ${trimA} -to ${trimB} -i ${uploadedVideoPath} \\
+                -filter_complex "reverse,fifo[r];[0:v][r] concat=n=2:v=1,crop=${cropW}:${cropH}:${cropX}:${cropY},fps=${framerate},setpts=1*PTS[v]" -map "[v]" \\
+                -preset default -an -vsync 0 -loop ${loopFlag} -qscale ${quality} ${outputFilePath}`;
+        } else {
+            command =
+                `ffmpeg -ss ${trimA} -to ${trimB} -i ${uploadedVideoPath} \\
+                -vf "crop=${cropW}:${cropH}:${cropX}:${cropY},fps=${framerate},setpts=1*PTS" \\
+                -preset default -an -vsync 0 -loop ${loopFlag} -qscale ${quality} ${outputFilePath}`;
+        }
+    } else if (process.platform === "win32") {
+        if (concatReversed) {
+            command =
+                `ffmpeg.exe -ss ${trimA} -to ${trimB} -i "${uploadedVideoPath}" -filter_complex "reverse,fifo[r];[0:v][r] concat=n=2:v=1,crop=${cropW}:${cropH}:${cropX}:${cropY},fps=${framerate},setpts=1*PTS[v]" -map "[v]" -preset default -an -vsync 0 -loop ${loopFlag} -qscale ${quality} "${outputFilePath}"`;
+        } else {
+            command =
+                `ffmpeg.exe -ss ${trimA} -to ${trimB} -i "${uploadedVideoPath}" -vf "crop=${cropW}:${cropH}:${cropX}:${cropY},fps=${framerate},setpts=1*PTS" -preset default -an -vsync 0 -loop ${loopFlag} -qscale ${quality} "${outputFilePath}"`;
+        }
+    } else {
+        console.log("Cannot build a command with ffmpeg due to unrecognized OS");
+        alert("Cannot build a command with ffmpeg due to unrecognized OS");
+    }
+
+    console.log("\nExecute the FFMPEG command:\n\n", command, "\n");
+
+    exec(command, (error, stdout, stderr) => {
+        if (error) {
+            console.log(`Error: ${error.message}`);
+            res.json({ outputFilePath: outputFilePath }).end();
+            return;
+        }
+        if (stderr) {
+            console.log(`Stderr: ${stderr}`);
+            res.json({ outputFilePath: outputFilePath }).end();
+            return;
+        }
+        res.json({ outputFilePath: outputFilePath }).end();
+    });
 });
 
 
