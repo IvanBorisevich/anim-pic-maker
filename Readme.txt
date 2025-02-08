@@ -1,4 +1,6 @@
 Requirements:
 
 choco install ffmpeg
-npm install express
+
+-- from inside the project dir
+npm install 
